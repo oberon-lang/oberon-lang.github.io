@@ -4,7 +4,7 @@ Check back later.
 
 ### Code Examples
 
-{% highlight linenos %}
+```
 module Fibonacci
   proc calc( n : integer ): integer
     var a,b: integer
@@ -25,4 +25,4 @@ begin
   assert( res = 10946 )
   println("Fibonacci done")
 end Fibonacci
-{% endhighlight %}
+```
