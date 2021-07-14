@@ -4,7 +4,7 @@ Check back later.
 
 ### Code Examples
 
-```pascal
+```modula-2
 module Fibonacci
   proc calc( n : integer ): integer
     var a,b: integer
