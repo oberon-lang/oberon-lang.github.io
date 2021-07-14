@@ -4,11 +4,11 @@ description: A lean, statically typed compiled general-purpose, procedural and o
     in the Pascal tradition with support for generic programming
 show_downloads: false
 logo: assets/img/Oberon.png
-markdown: kramdown
-kramdown:
-  input: GFM
-  syntax_highlighter: rouge
-  syntax_highlighter_opts:
-    block:
-      line_numbers: true
-      start_line: 1
+#markdown: kramdown
+#kramdown:
+#  input: GFM
+#  syntax_highlighter: rouge
+#  syntax_highlighter_opts:
+#    block:
+#      line_numbers: true
+#      start_line: 1
