@@ -4,7 +4,7 @@ Check back later.
 
 ### Code Examples
 
-```
+```linenos
 module Fibonacci
   proc calc( n : integer ): integer
     var a,b: integer
