@@ -4,7 +4,7 @@ Check back later.
 
 ### Code Examples
 
-```lua
+```ada
 module Fibonacci
   proc calc( n : integer ): integer
     var a,b: integer
