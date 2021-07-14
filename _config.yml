@@ -3,3 +3,4 @@ title: The Oberon+ Programming Language
 description: A lean, statically typed compiled general-purpose, procedural and object-oriented programming language 
     in the Pascal tradition with support for generic programming
 show_downloads: false
+logo: Oberon.png
