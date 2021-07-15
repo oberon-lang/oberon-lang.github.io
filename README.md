@@ -3,12 +3,12 @@
 ### Procedural Programming
 ```
 module Fibonacci
-  proc calc*( n : integer ): integer
+  proc calc*(n : integer): integer
     var a, b: integer // comma is optional
   begin
     if n > 1 then 
-      a := calc( n - 1 )
-      b := calc( n - 2 )
+      a := calc(n - 1)
+      b := calc(n - 2)
       return a + b
     elsif n = 0 then 
       return 0
@@ -19,7 +19,7 @@ module Fibonacci
   var res: integer
 begin
   res := calc(21)
-  assert( res = 10946 )
+  assert(res = 10946)
 end Fibonacci
 ```
 
@@ -33,8 +33,10 @@ module Collections<T>
   const initial_len = 50
   var this: Deque  // this is initialized to nil
   begin 
-    new(this); new(this.data,initial_len) // semicolon is optional
+    new(this); new(this.data,initial_len) 
+             // semicolon is optional
     return this 
+    // this and data will be garbage collected
   end createDeque
   
   proc (this: Deque) append*(in element: T)
@@ -49,7 +51,8 @@ module Collections<T>
   proc (this: Deque) forEach*(var iter: Iterator)
   var i: integer
   begin 
-    for i := 0 to this.size-1 do iter.apply(this.data[i]) end
+    for i := 0 to this.size-1 do 
+      iter.apply(this.data[i]) end
   end forEach
 end Collections
 ```
@@ -64,8 +67,10 @@ module Drawing
   proc (this: Figure) draw*() end
     
   type
-     Circle* = pointer to record (Figure) diameter: integer end
-     Square* = pointer to record (Figure) width: integer end 
+     Circle* = pointer to record (Figure) 
+                          diameter: integer end
+     Square* = pointer to record (Figure) 
+                          width: integer end 
   proc (this: Circle) draw*() end
   proc (this: Square) draw*() end
     
@@ -87,11 +92,13 @@ module Drawing
 begin 
   figures := C.createDeque()
   new(circle)
-  circle.position.x := F.calc(3); circle.position.y := F.calc(4)
+  circle.position.x := F.calc(3)
+  circle.position.y := F.calc(4)
   circle.diameter := 3
   figures.append(circle)
   new(square)
-  square.position.x := F.calc(5); square.position.y := F.calc(6)
+  square.position.x := F.calc(5)
+  square.position.y := F.calc(6)
   square.width := 4
   figures.append(square)
   drawAll()
@@ -107,7 +114,8 @@ module Unicode
 begin
   str := "Isto é português"
   ustr := "美丽的世界，你好!" + " " + str
-  println(ustr) // prints "美丽的世界，你好! Isto é português"
+  println(ustr) 
+  // prints "美丽的世界，你好! Isto é português"
 end Unicode
 ```
 ### More Examples
@@ -115,7 +123,7 @@ If you are looking for representative size examples, see
 
 - [the Oberon+ version of the "Are we fast yet" benchmark suite](https://github.com/rochus-keller/Oberon/tree/master/testcases/Are-we-fast-yet)
 - [a compatible version of the Oberon System (written in Oberon-07)](https://github.com/rochus-keller/OberonSystem)
-- [the Oberon+ version of a subset of the Blackbox Framework (work in progress)](https://github.com/rochus-keller/BlackboxFramework/tree/master/Minimal)
+- [Oberon+ version of a subset of the Blackbox Framework (WIP)](https://github.com/rochus-keller/BlackboxFramework/tree/master/Minimal)
 
 ## Documentation
 
@@ -124,7 +132,14 @@ If you are looking for representative size examples, see
 
 ## Implementation
 
-TBD: IDE, screenshot, binaries url, source code url
+A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends are in preparation. There is also an IDE with semantic navigation and source and bytecode level debugger (see screenshot).
+
+- [Source code (Github)](https://github.com/rochus-keller/Oberon)
+- [Windows version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)
+- [macOS version (mount and run)](http://software.rochus-keller.ch/OberonIDE_macOS_x64.dmg)
+- [Linux i386 version (requires Qt 5)](http://software.rochus-keller.ch/OberonIDE_linux_i368.tar.gz)
+
+![Screenshot of the Oberon+ IDE](http://software.rochus-keller.ch/obxide_0.7.13.png)
 
 ## Blog
 
