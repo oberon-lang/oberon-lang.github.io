@@ -61,9 +61,11 @@ end Collections
 ```
 module Drawing
   import F := Fibonacci
+         C := Collections<Figure>
+  
   type Figure* = pointer to record
-                   position: record x,y: integer end
-                end  
+                   position: record 
+                     x,y: integer end end  
   proc (this: Figure) draw*() end
     
   type
@@ -73,9 +75,7 @@ module Drawing
                           width: integer end 
   proc (this: Circle) draw*() end
   proc (this: Square) draw*() end
-    
-  import C := Collections<Figure>
-    
+        
   var figures: C.Deque
        circle: Circle
        square: Square
@@ -83,7 +83,9 @@ module Drawing
   proc drawAll()
     type I = record(C.Iterator) count: integer end
     proc (var this: I) apply( in figure: Figure ) 
-    begin figure.draw(); inc(this.count) end apply
+    begin 
+      figure.draw(); inc(this.count) 
+    end apply
     var i: I // count is initialized to zero
   begin
     figures.forEach(i)
@@ -132,7 +134,7 @@ If you are looking for representative size examples, see
 
 ## Implementation
 
-A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends are in preparation. There is also an IDE with semantic navigation and source and bytecode level debugger (see screenshot).
+A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends are in preparation. There is also an IDE with semantic navigation and source and bytecode level debugger (see [screenshot](http://software.rochus-keller.ch/obxide_0.7.13.png)).
 
 - [Source code (Github)](https://github.com/rochus-keller/Oberon)
 - [Windows version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)
