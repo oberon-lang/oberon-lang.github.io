@@ -52,7 +52,8 @@ module Collections<T>
   var i: integer
   begin 
     for i := 0 to this.size-1 do 
-      iter.apply(this.data[i]) end
+      iter.apply(this.data[i]) 
+    end
   end forEach
 end Collections
 ```
@@ -134,14 +135,14 @@ If you are looking for representative size examples, see
 
 ## Implementation
 
-A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends are in preparation. There is also an IDE with semantic navigation and source and bytecode level debugger (see [screenshot](http://software.rochus-keller.ch/obxide_0.7.13.png)).
+A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends are in preparation. There is also an IDE with semantic navigation, and source and bytecode level debugger (see [screenshot](http://software.rochus-keller.ch/obxide_0.7.13.png)).
 
 - [Source code (Github)](https://github.com/rochus-keller/Oberon)
 - [Windows version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)
 - [macOS version (mount and run)](http://software.rochus-keller.ch/OberonIDE_macOS_x64.dmg)
-- [Linux i386 version (requires Qt 5)](http://software.rochus-keller.ch/OberonIDE_linux_i368.tar.gz)
+- [Linux i386 version (unpack and run, requires Qt 5)](http://software.rochus-keller.ch/OberonIDE_linux_i368.tar.gz)
 
-![Screenshot of the Oberon+ IDE](http://software.rochus-keller.ch/obxide_0.7.13.png)
+![[Screenshot of the Oberon+ IDE](http://software.rochus-keller.ch/obxide_0.7.13.png)](http://software.rochus-keller.ch/obxide_0.7.13.png)
 
 ## Blog
 
