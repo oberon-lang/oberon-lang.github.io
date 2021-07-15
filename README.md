@@ -30,8 +30,8 @@ module Collections<T>
                       data: pointer to array of T
                       size: integer end
   proc createDeque*(): Deque 
-  const initial_len = 50
-  var this: Deque  // this is initialized to nil
+    const initial_len = 50
+    var this: Deque  // this is initialized to nil
   begin 
     new(this); new(this.data,initial_len) 
              // semicolon is optional
@@ -49,7 +49,7 @@ module Collections<T>
   proc (var this: Iterator) apply*(in element: T) end
   
   proc (this: Deque) forEach*(var iter: Iterator)
-  var i: integer
+    var i: integer
   begin 
     for i := 0 to this.size-1 do 
       iter.apply(this.data[i]) 
@@ -106,7 +106,6 @@ begin
   figures.append(square)
   drawAll()
 end Drawing  
-
 ```
 ### Unicode Support
 ```
