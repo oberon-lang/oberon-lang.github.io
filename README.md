@@ -148,3 +148,5 @@ A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends a
 TBD: Oberon History and language versions
 
 TBD: Difference Oberon+ to Oberon-2
+
+TBD: Rationale for design decisions
