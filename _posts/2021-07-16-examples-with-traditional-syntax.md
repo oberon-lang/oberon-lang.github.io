@@ -39,14 +39,14 @@ MODULE Collections<T>;
     CONST initial_len = 50;
     VAR this: Deque;  // this is initialized to nil
   BEGIN 
-    NEW(this); NEW(this.data,initial_len); // semicolon is optional
+    NEW(this); NEW(this.data,initial_len); 
     RETURN this 
   END createDeque;
   
   PROCEDURE (this: Deque) append*(IN element: T);
   BEGIN 
     IF this.size = LEN(this.data) THEN ASSERT(FALSE) END;
-    this.data[this.size] := element INC(this.size);
+    this.data[this.size] := element; INC(this.size)
   END append;
   
   TYPE Iterator* = RECORD END;
