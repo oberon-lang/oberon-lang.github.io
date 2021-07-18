@@ -12,12 +12,11 @@ MODULE Fibonacci;
   VAR res: INTEGER;
   PROCEDURE calc*( n : INTEGER ): INTEGER;
     VAR a, b: INTEGER;
-  BEGIN
-    IF n > 1 THEN 
+  BEGIN IF n > 1 THEN 
       a := calc(n - 1);
       b := calc(n - 2);
       RETURN a + b
-    ELSIF n = 0 THEN 
+    ELSIF n = 0 THEN
       RETURN 0
     ELSE 
       RETURN 1
@@ -35,9 +34,11 @@ MODULE Collections<T>;
   TYPE Deque* = POINTER TO RECORD
                       data: POINTER TO ARRAY OF T;
                       size: INTEGER END;
+       Iterator* = RECORD END;
+       
   PROCEDURE createDeque*(): Deque;
     CONST initial_len = 50;
-    VAR this: Deque;  // this is initialized to nil
+    VAR this: Deque;  (* this is initialized to nil *)
   BEGIN 
     NEW(this); NEW(this.data,initial_len); 
     RETURN this 
@@ -49,13 +50,12 @@ MODULE Collections<T>;
     this.data[this.size] := element; INC(this.size)
   END append;
   
-  TYPE Iterator* = RECORD END;
   PROCEDURE (VAR this: Iterator) apply*(IN element: T) END;
   
   PROCEDURE (this: Deque) forEach*(VAR iter: Iterator);
     VAR i: INTEGER;
-  BEGIN 
-    FOR i := 0 TO this.size-1 DO iter.apply(this.data[i]) END;
+  BEGIN FOR i := 0 TO this.size-1 DO 
+    iter.apply(this.data[i]) END;
   END forEach
 END Collections.
 ```
@@ -64,43 +64,43 @@ END Collections.
 ```
 MODULE Drawing;
   IMPORT F := Fibonacci;
+  	     C := Collections<Figure>;
+  	
   TYPE Figure* = POINTER TO RECORD
-                   position: RECORD x,y: INTEGER END
-                END;  
+                            position: RECORD 
+                                      x,y: INTEGER 
+                            END END;  
+                     
+       Circle* = POINTER TO RECORD (Figure) 
+                            diameter: INTEGER END;
+       Square* = POINTER TO RECORD (Figure) 
+                            width: INTEGER END; 
+                     
   PROCEDURE (this: Figure) draw*() END;
-    
-  TYPE
-     Circle* = POINTER TO RECORD (Figure) diameter: INTEGER END;
-     Square* = POINTER TO RECORD (Figure) width: INTEGER END; 
   PROCEDURE (this: Circle) draw*() END;
   PROCEDURE (this: Square) draw*() END;
     
-  IMPORT C := Collections<Figure>;
-    
-  VAR figures: C.Deque;
-       circle: Circle;
+  VAR figures: C.Deque; circle: Circle;
        square: Square;
     
   PROCEDURE drawAll*();
     TYPE I = RECORD(C.Iterator) count: INTEGER END;
+    VAR i: I; (* count is initialized to zero *)
     PROCEDURE (VAR this: I) apply( IN figure: Figure );
-    BEGIN figure.draw(); INC(this.count) END apply;
-    VAR i: I; // count is initialized to zero
+    BEGIN figure.draw(); INC(this.count) 
+    END apply;
   BEGIN
     figures.forEach(i);
     ASSERT(i.count = 2);
   END drawAll;
-BEGIN 
-  figures := C.createDeque();
-  NEW(circle);
-  circle.position.x := F.calc(3); circle.position.y := F.calc(4);
-  circle.diameter := 3;
+BEGIN figures := C.createDeque();
+  NEW(circle); circle.position.x := F.calc(3); 
+  circle.position.y := F.calc(4); circle.diameter := 3;
   figures.append(circle);
-  NEW(square);
-  square.position.x := F.calc(5); square.position.y := F.calc(6);
-  square.width := 4;
+  NEW(square); square.position.x := F.calc(5); 
+  square.position.y := F.calc(6); square.width := 4;
   figures.append(square);
-  drawAll();
+  drawAll()
 END Drawing. 
 ```
 ### Unicode Support
