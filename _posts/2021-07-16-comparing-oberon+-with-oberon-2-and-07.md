@@ -39,12 +39,12 @@ In addition to the above, Oberon+ adds the following:
 - All semicolons optional, most commas optional
 - UTF-8 source files with Unicode string literals and comments
 - Line comments
-- Import paths, see {% post_url 2021-07-18-considering-imports %}
+- Import paths, see [this post]({% post_url 2021-07-18-considering-imports %})
 - Flexible declaration sequences, more than one CONST, TYPE, VAR or IMPORT section in arbitrary order
 - DEFINITION modules
 - Enumerations
 - Constant VAR parameters using the IN keyword
-- Generic modules, see {% post_url 2021-07-17-considering-generics %}
+- Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
 
 
 
