@@ -64,7 +64,7 @@ END Collections.
 ```
 MODULE Drawing;
   IMPORT F := Fibonacci;
-  	     C := Collections<Figure>;
+         C := Collections<Figure>;
   	
   TYPE Figure* = POINTER TO RECORD
                             position: RECORD 
@@ -112,6 +112,7 @@ MODULE Unicode;
 BEGIN
   str := "Isto é português";
   ustr := "美丽的世界，你好!" + " " + str;
-  PRINTLN(ustr) // prints "美丽的世界，你好! Isto é português"
+  PRINTLN(ustr) 
+  (* prints "美丽的世界，你好! Isto é português" *)
 END Unicode.
 ```
