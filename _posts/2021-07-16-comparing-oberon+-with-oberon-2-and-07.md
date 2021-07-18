@@ -14,9 +14,10 @@ The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2
 - With statements
 - For statements
 
-[Oberon-07](http://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf) (revision 3.5.2016) completely ignored Oberon-2 and instead also describes itself as an extension of the original Oberon; here a list of the major changes in Oberon-07:
+[Oberon-07](http://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf) (revision 3.5.2016) also describes itself as an extension of the original Oberon (thus ignoring most of the Oberon-2 extensions); here is a list of the major changes in Oberon-07:
 
 - Removed the LOOP and EXIT statements
+- Added the FOR statement
 - Added the optional ELSIF part to the WHILE statement
 - Removed the WITH statement
 - Extended the CASE statement so that the case variable may also be a record or pointer to record type ("type CASE", as a replacement of WITH)
