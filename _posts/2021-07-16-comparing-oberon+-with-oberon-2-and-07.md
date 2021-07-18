@@ -11,7 +11,7 @@ The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2
 - Type–bound procedures
 - Read–only export
 - Open arrays
-- With statements
+- Extended WITH statements (with variants)
 - For statements
 
 [Oberon-07](http://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf) (revision 3.5.2016) also describes itself as an extension of the original Oberon (thus ignoring most of the Oberon-2 extensions); here is a list of the major changes in Oberon-07:
