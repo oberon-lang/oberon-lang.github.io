@@ -12,7 +12,7 @@ The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2
 - Read–only export
 - Open arrays
 - Extended WITH statements (with variants)
-- For statements
+- FOR statements
 
 [Oberon-07](http://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf) (revision 3.5.2016) also describes itself as an extension of the original Oberon (thus ignoring most of the Oberon-2 extensions); here is a list of the major changes in Oberon-07:
 
@@ -39,14 +39,28 @@ In addition to the above, Oberon+ adds the following:
 - Underscores in identifiers
 - All semicolons optional, most commas optional
 - UTF-8 source files with Unicode string literals and comments
+- WCHAR type
+- String concatenation using the + operator
 - Line comments
 - Import paths, see [this post]({% post_url 2021-07-18-considering-imports %})
 - Flexible declaration sequences, more than one CONST, TYPE, VAR or IMPORT section in arbitrary order
 - DEFINITION modules
 - Enumerations
+- Procedure local records with type-bound procedures
 - Constant VAR parameters using the IN keyword
 - Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
 
+Pending features of Oberon+:
+
+- Delegate procedure types (procedure types for bound procedures)
+- C FFI (based on DEFINITION modules with special C compatible types)
+- Common base type of all records, ANYREC (like Component Pascal)
+
+Features in evaluation:
+
+- Procedure body interleafed with declaration sequences
+- Non-local variable and parameter access
+- Covariance of overloaded method return types and fields (like Component Pascal)
 
 
 
