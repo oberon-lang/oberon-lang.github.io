@@ -58,7 +58,7 @@ Pending features of Oberon+:
 
 Features in evaluation:
 
-- Procedure body interleafed with declaration sequences
+- Procedure body interleaved with declaration sequences
 - Non-local variable and parameter access
 - Covariance of overloaded method return types and fields (like Component Pascal)
 
