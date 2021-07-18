@@ -22,7 +22,5 @@ This brought me back to generic modules, where it was now no longer a problem, w
 
 It also came naturally that one can validate generic modules already, before they are instantiated (in contrast e.g. to C++ templates). An as a side effect this works with any actual types. The only thing the compiler needs to know about the type is that there is a default value. Everything else can be delegated e.g. to procedure types which are declared and used in the generic module, which again fits well with Oberon (e.g. procedure types for comparison operations or a hash function over the generic type, which are e.g. required by a dictionary, see [here for an example](https://github.com/rochus-keller/Oberon/blob/73a08f43a2f7f5a40c6b9ab38824ef9e2f58841b/testcases/Are-we-fast-yet/som/Dictionary.obx#L56)). This avoids the complex constraint language of Ada generics. The specification of the generic modules in the language report required less than one page.
 
-It would be interesting to learn whether Roe and Szyperski also considered this approach, and for what reason they rejected it.
-
 #### References
 [Ro97] Roe, P.; Szyperski, C. (1997). Lightweight parametric polymorphism for Oberon. In: Mössenböck H. (eds). Modular Programming Languages. JMLC 1997. Lecture Notes in Computer Science, vol 1204. Springer, Berlin, Heidelberg. 
