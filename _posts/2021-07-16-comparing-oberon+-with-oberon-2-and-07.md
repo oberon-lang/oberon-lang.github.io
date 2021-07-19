@@ -25,8 +25,8 @@ The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2
 - Support direct array and record assignments, making the COPY procedure obsolete 
 - Variables imported from other modules are now read-only
 - Removed the concept of type inclusion, as well as the SHORTINT and LONGINT types
-- Removed access to local variables and parameters of outer procedures from nested procedures ("non-local access")
 - TRUE and FALSE are keywords, no longer global constants
+- Removed access to local variables and parameters of outer procedures from nested procedures ("non-local access")
 
 Since Oberon+ includes a union of Oberon-2 and Oberon-07, all removals done by Oberon-07 besides the last one ("non-local access") are ignored. The resulting redundancy with WITH and type CASE is tolerated in favor of compatibility. To accomodate the effect of the Oberon-07 RETURN, procedure bodies can either consist of BEGIN plus declaration sequence, or a RETURN statement. The read-only access to imported module variables is no issue, since programs meeting this constraint are still compatible with original Oberon (they simply do without write access). 
 
