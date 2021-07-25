@@ -25,7 +25,7 @@ end Fibonacci
 
 ### Generic Programming
 ```
-module Collections<T>
+module Collections(T) // <> is supported as well
   type Deque* = pointer to record
                       data: pointer to array of T
                       size: integer end
@@ -62,7 +62,7 @@ end Collections
 ```
 module Drawing
   import F := Fibonacci
-         C := Collections<Figure>
+         C := Collections(Figure)
   
   type Figure* = pointer to record
                    position: record 

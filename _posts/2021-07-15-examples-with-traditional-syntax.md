@@ -30,7 +30,7 @@ END Fibonacci.
 
 ### Generic Programming
 ```
-MODULE Collections<T>;
+MODULE Collections(T);
   TYPE Deque* = POINTER TO RECORD
                       data: POINTER TO ARRAY OF T;
                       size: INTEGER END;
@@ -64,7 +64,7 @@ END Collections.
 ```
 MODULE Drawing;
   IMPORT F := Fibonacci;
-         C := Collections<Figure>;
+         C := Collections(Figure);
   	
   TYPE Figure* = POINTER TO RECORD
                             position: RECORD 
