@@ -2,7 +2,6 @@
 layout: post
 title:  Towards an Oberon+ Foreign Function Interface (FFI)
 author: Rochus Keller
-status: work in progress
 ---
 
 C is ubiquitous, and there are thousands of battle-tested C libraries worth reusing. Unfortunately, however, the C programming language has its pitfalls, so it makes perfect sense not to implement the actual application in C directly.
@@ -79,7 +78,23 @@ It should be possible to automatically generate DEFINITION modules from the head
 
 The parser takes care that a DEFINITION representing a C library only uses the Oberon+ dedicated C types in declarations (and not regular Oberon+ structured types). If at all, such modules should only import other DEFINITIONs representing C libraries or header files. 
 
+### Update 2021-11-07
 
+Over the last months I implemented different versions of the FFI. 
+
+The first one was implemented in the LuaJIT version of Oberon+. It mostly corresponded to what I've written above. But apparently I reached the limits of LuaJIT. The OberonSystem version based on SDL randomly crashed and I wasn't able to find the reason nor a work-around; a reason could be that SDL internally uses additional threads which is not compatible with LuaJIT, but that's just an assumption. 
+
+I therefore evaluated the Common Language Infrastructure (CLI, ECMA-335) and specifically different Mono versions which turned out to be a suitable alternative technology to LuaJIT. Implementing a code generator required some time and a lot of research and trial and error. It became apparent that a few changes would be necessary for the FFI due to the strict separation of managed and unmanaged memory in CLI. 
+
+The most important change is giving up the ADR() function. ADR() didn't fit because it could be used independently of calls to external procedures. This is not a problem for the C structured types (CSTRUCT etc.) which don't require special memory management consideration. But it is an issue in the case an ARRAY should be directly passed to an external procedure (to avoid copies). CIL supports taking the address of blitable structured types as long as the memory is "pinned" (i.e. excluded from relocation by the garbage collector); this feature allows us to pass the address to an external procedure without the GC turning the address invalid during the call; but we also have to "unpin" the memory as soon as possible. And also if we make a copy of the array we have to release the copy after use and possibly write back the data modified by the external procedure call to the original array. With ADR() we know when to "pin" or copy the array, but it is very difficult to find out when it is safe to unpin or when we have to write back the data (remember the address could be passed out of scope or even stored in a module variable). A possible solution could be a RELEASE() function by which we tell the runtime that an address received by ADR() is no longer used; but this is not only additional effort but also a perfect source of programming errors.
+
+I therefore decided to follow the (apparently undocumented) Component Pascal approach, where procedure calls can include an implicit address-of operation (the formal parameter is a pointer to a base type compatible with the provided actual parameter). But this is only supported for procedures declared in an external library module, and only for a subset of types; this should somewhat outweigh the disadvantage of being an implicit operation. One could also have made this operation explicit e.g. by making the ADR() call part of the function call, or by a new keyword like "ref" in C#, but I considered this to be less elegant and unnecessarily complicated given the fact that it is a (potentially) unsafe external call anyway.
+
+Component Pascal also supports implicit address-of operation then assigning a structured type to a pointer of this structured type. To avoid the aforementioned unpin/write-back issue Oberon+ only supports this for C structured types. Since this statement can occur anywhere, this would be a sensible application of ADR(); but I weighted the extra function just for this purpose heavier than the implicit operation, which may be a mistake - we'll see. Anyway the parser can easily identify all implicit address-of operations even without explicit ADR() and the IDE could list or mark these if need be.
+
+Here is [the specification](https://github.com/oberon-lang/specification/blob/master/The_Programming_Language_Oberon%2B.adoc#foreign-function-interface).
+
+Here is [an FFI example](https://github.com/rochus-keller/OberonSystem/blob/FFI/ObSdl.obx).
 
 
 
