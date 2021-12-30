@@ -50,10 +50,10 @@ In addition to the above, Oberon+ adds the following:
 - Delegate procedure types (procedure types for bound procedures)
 - Constant VAR parameters using the IN keyword
 - Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
+- FFI language for cross-platform C shared library integration, see [this post]({% post_url 2021-08-03-towards-a-foreign-function-interface %})
 
 Pending features of Oberon+:
 
-- C FFI (based on DEFINITION modules with special C compatible types)
 - Common base type of all records, ANYREC (like Component Pascal)
 
 Features in evaluation:
