@@ -139,7 +139,7 @@ A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends a
 - [Source code (Github)](https://github.com/rochus-keller/Oberon)
 - [Windows version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)
 - [macOS version (mount and run)](http://software.rochus-keller.ch/OberonIDE_macOS_x64.dmg)
-- [Linux i386 version (unpack and run, requires Qt 5)](http://software.rochus-keller.ch/OberonIDE_linux_i368.tar.gz)
+- [Linux i386 version (unpack and run, requires Qt 5)](http://software.rochus-keller.ch/OberonIDE_linux_i386.tar.gz)
 
 [![Screenshot of the Oberon+ IDE](http://software.rochus-keller.ch/obxide_0.7.13.png)](https://github.com/rochus-keller/Oberon/blob/master/README.md#the-oberon-ide)
 
