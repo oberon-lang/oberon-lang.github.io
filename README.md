@@ -25,7 +25,7 @@ end Fibonacci
 
 ### Generic Programming
 ```
-module Collections(T) // <> is supported as well
+module Collections(T) 
   type Deque* = pointer to record
                       data: pointer to array of T
                       size: integer end
@@ -134,7 +134,7 @@ If you are looking for representative size examples, see
 
 ## Implementation
 
-A compiler is available which generates LuaJIT bytecode; CLI and LLVM backends are in preparation. There is also an IDE with semantic navigation, and source and bytecode level debugger (see [screenshot](http://software.rochus-keller.ch/obxide_0.7.13.png)).
+A compiler is available which generates CLI/ECMA-335 bytecode and C99 source code. There is also an IDE with semantic navigation, and source and bytecode level debugger (see [screenshot](http://software.rochus-keller.ch/obxide_0.7.13.png)).
 
 - [Source code (Github)](https://github.com/rochus-keller/Oberon)
 - [Windows version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)

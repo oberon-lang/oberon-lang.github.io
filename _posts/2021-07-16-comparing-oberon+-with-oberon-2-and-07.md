@@ -28,9 +28,7 @@ The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2
 - TRUE and FALSE are keywords, no longer global constants
 - Removed access to local variables and parameters of outer procedures from nested procedures ("non-local access")
 
-Since Oberon+ includes a union of Oberon-2 and Oberon-07, all removals done by Oberon-07 besides the last one ("non-local access") are ignored. The resulting redundancy with WITH and type CASE is tolerated in favor of compatibility. To accomodate the effect of the Oberon-07 RETURN, procedure bodies can either consist of BEGIN plus statement sequence, or a RETURN statement. Oberon-07 programs with read-only access to imported module variables still run on Oberon+ without modification (they simply do without write access); if the author of an Oberon-07 module wants to enforce read-only exports of the module variables, visibility mark must be changed to "-". 
-
-The missing non-local access of Oberon+ can cause incompatibilities with programs written in original Oberon or Oberon-2, although only a fraction of the existing code seems to use this feature. Whether it is feasible and worthwhile to add it to Oberon+ is subject to further investigations. In any case a simple work-around is to pass the required objects as VAR or IN parameters to the nested procedures.
+Since Oberon+ includes a union of Oberon-2 and Oberon-07, all removals done by Oberon-07 are ignored. The resulting redundancy with WITH and type CASE is tolerated in favor of compatibility. To accomodate the effect of the Oberon-07 RETURN, procedure bodies can either consist of BEGIN plus statement sequence, or a RETURN statement. Oberon-07 programs with read-only access to imported module variables still run on Oberon+ without modification (they simply do without write access); if the author of an Oberon-07 module wants to enforce read-only exports of the module variables, visibility mark must be changed to "-". 
 
 In addition to the above, Oberon+ adds the following:
 
@@ -51,6 +49,7 @@ In addition to the above, Oberon+ adds the following:
 - Constant VAR parameters using the IN keyword
 - Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
 - FFI language for cross-platform C shared library integration, see [this post]({% post_url 2021-08-03-towards-a-foreign-function-interface %})
+- Variable length arrays (VLA)
 
 Pending features of Oberon+:
 
@@ -58,10 +57,11 @@ Pending features of Oberon+:
 
 Features in evaluation:
 
-- Procedure body interleaved with declaration sequences
-- Non-local variable and parameter access
+- Simple exception mechanism based on protected procedure calls
+- Array and record literals
+- Literals and procedure references as generic arguments
+- COMPLEX type, as defined in the Oakwood guidelines, including standard libraries
 - Covariance of overloaded method return types and fields (like Component Pascal)
-
 
 
 
