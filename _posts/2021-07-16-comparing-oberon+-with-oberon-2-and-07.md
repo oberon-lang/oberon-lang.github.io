@@ -47,13 +47,11 @@ In addition to the above, Oberon+ adds the following:
 - Procedure local records with type-bound procedures
 - Delegate procedure types (procedure types for bound procedures)
 - Constant VAR parameters using the IN keyword
+- ANYREC, implicit base type of each record
 - Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
 - FFI language for cross-platform C shared library integration, see [this post]({% post_url 2021-08-03-towards-a-foreign-function-interface %})
 - Variable length arrays (VLA)
 
-Pending features of Oberon+:
-
-- Common base type of all records, ANYREC (like Component Pascal)
 
 Features in evaluation:
 
