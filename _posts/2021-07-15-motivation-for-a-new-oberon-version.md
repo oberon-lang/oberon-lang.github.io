@@ -14,4 +14,4 @@ From these considerations a new language emerged, which I call **Oberon+** (i.e.
 
 New developers will probably enjoy the fact that the language looks quite similar to e.g. Lua, but offers static type safety and greater simplicity compared to other statically typed languages. Security-conscious developers will be pleased that there are pointers, but no pointer arithmetic, and every pointer is either nil or points to a valid object. Existing Oberon developers can continue to use the traditional syntax, which Oberon+ continues to support, and benefit selectively from the increased flexibility and new capabilities as needed. 
 
-
+(Updated 2022-03-16)
