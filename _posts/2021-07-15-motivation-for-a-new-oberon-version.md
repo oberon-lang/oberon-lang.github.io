@@ -3,6 +3,7 @@ layout: post
 title:  Motivation for a new Oberon version
 author: Rochus Keller
 ---
+(Updated 2022-03-16)
 
 This project started out as an [Oberon-07](http://www.projectoberon.net/wirth/Oberon/Oberon07.Report.pdf) parser, code model and transpiler written in C++ and Qt, with the goal to build tools to better understand the [Lola-2](https://www.inf.ethz.ch/personal/wirth/Lola/Lola2.pdf) compiler and to automatically translate it to maintainable C++ with minimal dependencies to other C++ libraries, and with no dependencies to the Oberon System (see the [Lola](https://github.com/rochus-keller/lola) and [LolaCreator](https://github.com/rochus-keller/lolacreator) repositories).
 
@@ -14,4 +15,4 @@ From these considerations a new language emerged, which I call **Oberon+** (i.e.
 
 New developers will probably enjoy the fact that the language looks quite similar to e.g. Lua, but offers static type safety and greater simplicity compared to other statically typed languages. Security-conscious developers will be pleased that there are pointers, but no pointer arithmetic, and every pointer is either nil or points to a valid object. Existing Oberon developers can continue to use the traditional syntax, which Oberon+ continues to support, and benefit selectively from the increased flexibility and new capabilities as needed. 
 
-(Updated 2022-03-16)
+

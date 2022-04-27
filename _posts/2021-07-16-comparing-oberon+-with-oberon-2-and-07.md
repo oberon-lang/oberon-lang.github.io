@@ -3,6 +3,7 @@ layout: post
 title:  Comparing Oberon+ with Oberon-2 and Oberon-07
 author: Rochus Keller
 ---
+(Updated 2022-04-27)
 
 The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2 language definitions. Since both Oberon-2 and Oberon-07 are an extension of the first Oberon version (1987 and 1990), the Oberon+ language definition therefore also includes the original Oberon language. This means, that in principle each program written in Oberon up to Oberon-2 and including Oberon-07 is compatible with the Oberon+ compiler. There is one exception at which we will look below.
 
@@ -51,6 +52,7 @@ In addition to the above, Oberon+ adds the following:
 - Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
 - FFI language for cross-platform C shared library integration, see [this post]({% post_url 2021-08-03-towards-a-foreign-function-interface %})
 - Variable length arrays (VLA)
+- Conditional compilation (as recommended by the Oakwood guidelines)
 
 
 Features in evaluation:
@@ -61,5 +63,5 @@ Features in evaluation:
 - COMPLEX type, as defined in the Oakwood guidelines, including standard libraries
 - Covariance of overloaded method return types and fields (like Component Pascal)
 
-(Updated 2022-03-21)
+
 

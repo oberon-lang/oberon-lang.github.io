@@ -3,6 +3,7 @@ layout: post
 title:  Towards an Oberon+ Foreign Function Interface (FFI)
 author: Rochus Keller
 ---
+(Updated 2022-01-06)
 
 C is ubiquitous, and there are thousands of battle-tested C libraries worth reusing. Unfortunately, however, the C programming language has its pitfalls, so it makes perfect sense not to implement the actual application in C directly.
 
@@ -96,5 +97,4 @@ Here is [the specification](https://github.com/oberon-lang/specification/blob/ma
 
 Here is [an FFI example](https://github.com/rochus-keller/OberonSystem/blob/FFI/ObSdl.obx).
 
-(Updated 2022-01-06)
 
