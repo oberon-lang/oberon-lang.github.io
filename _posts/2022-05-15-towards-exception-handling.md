@@ -99,17 +99,28 @@ end Exception
 #### References
 
 [Ad86] United States Government (1986). Rationale for the Design of the Ada Programming Language (Ada'83 Rationale). http://archive.adaic.com/standards/83rat/html/ratl-00.html (accessed 2022-05-14).
+
 [Ie06] Ierusalimschy, R., et al. (2006). Lua 5.1 reference manual. https://www.lua.org/manual/5.1/ (accessed 2022-05-14).
+
 [Mc61] McCarthy, J., et al. (1961). LISP 1.5 programmer's manual. 1nd Edition, Jul 14 1961. Computation Center & Research Lab of Electronics at MIT.
+
 [Mi97] Milner, R., et al. (1997). The definition of standard ML: revised. MIT press.
+
 [Mo91] Mössenböck, H., & Wirth, N. (1991). The programming language Oberon-2. Structured Programming, 12(4), 179-196.
+
 [Re87] Rehmer, K. (1987). Error handling using Modula-2. ACM SIGPLAN Notices, 22(3), 40-48.
+
 [Sc96] Schoenhacker, M., & Pronk, C. (1996). ISO/IEC 10514–1, the standard for Modula-2: changes, clarifications and additions. ACM SIGPLAN Notices, 31(8), 84-95.
+
 [St94] Stroustrup, B. (1994). The design and evolution of C++. Addison-Wesley.
+
 [St96] Steele, G. L., & Gabriel, R. P. (1996). The evolution of Lisp. In History of programming languages---II (pp. 233-330).
+
 [Wi16] Wirth, N. (2016). The Programming Language Oberon. https://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf (accessed 2020-11-16).
 [Wi88a] Wirth, N. (1988). From modula to oberon. Softw., Pract. Exper., 18: 661-670. 
+
 [Wi88b] Wirth, N. (1988). The programming language Oberon. Softw., Pract. Exper., 18(7), 671-690.
+
 [Wi88c] Wirth, N. (1988). Programming in Modula-2. 4th Edition. Springer-Verlag.
 
 
