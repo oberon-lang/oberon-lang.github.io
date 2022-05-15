@@ -4,10 +4,12 @@ title:  Towards Oberon+ Exception Handling
 author: Rochus Keller
 ---
 
-Original Oberon has little provisions for handling error conditions. The Oberon-07 specification [Wi16] doesn't mention errors at all; neither do the Oberon-2 [Mo91] nor the original Oberon specification [Wi88b], but both define the HALT() predefined procedure to terminate the program, and both specify conditions under which the program execution is automatically aborted (e.g. if the dynamic type doesn't meet a type guard). 
+#### State of error handling in Oberon and Modula-2
+Original Oberon has little provisions for handling error conditions. The Oberon-07 specification [Wi16] doesn't mention errors at all; neither do the Oberon-2 [Mo91] nor the original Oberon specification [Wi88b], but both define the `HALT()` predefined procedure to terminate the program, and both specify conditions under which the program execution is automatically aborted (e.g. if the dynamic type doesn't meet a type guard). 
 
 As we know, Oberon evolved from Modula-2 by very few additions and many more subtractions [Wi88a]. So it makes sense to check how error handling was considered in Modula-2. As with Oberon neither the standard textbook nor the language report [Wi88c] specifically address error condition handling; but the examples suggest that calling HALT is an appropriate measure to do so. However, there are other publications that specifically address this issue; e.g. [Re87] recommends user supplied error handling routines which are passed to an instance of an abstract data type via a SetErrorHandler procedure, but also states that this solution was not as elegant as the exception handling provided in Ada, especially with reusable modules. The recommended method also works with Oberon, but also suffers from the drawbacks described in [Re87]. 
 
+#### Discussion of existing solutions
 In Ada [Ad86], which appeared at about the same time as Modula-2, for each block of statements an exception handler can be optionally declared. An exception is just a symbol of type `exception`. There are predefined exceptions (like `constraint_error` if e.g. a negative integer is assigned to a natural) and custom exceptions (e.g. `My_Exception : exception;`). An exception can be raised anywhere in the code with a statement like e.g `raise My_Exception;`. An exception handler lists the exceptions to be handled and associates each with the statements to be executed in case of the exception. If an exception is not handled by a handler it is handed up the call chain to the next handler and so on. Here is an example:
 
 ```
@@ -56,11 +58,12 @@ How exception handling can be completely done without any additional syntax is n
 
 But Lua was not the first language to solve the problem of exception handling in this way. Already Lisp 1.5 in 1961 had a function called `ERRORSET` which did pretty much the same thing as `pcall()`, see [Mc61]. MacLisp evolved from Lisp 1.5 around 1966 and included the ERRORSET function, renamed to `ERRSET`; in addition it had a function called `ERR` which did essentially the same as the Lua `error()` function; by 1972 the functions `CATCH` and `THROW` were added to MacLisp, which worked similarly to ERRSET/ERR, but were especially conceived for dynamic non-local exits without interfering with error handling [St96]; not hard to guess where the keywords `catch` and `throw` come from, which can be found in many current languages.
 
+#### Derivation of an optimal solution for Oberon+ and discussion
 Wirth formidably demonstrated how to only integrate one essential feature - namely type extension - into the language to enable the object-oriented programming style, and at the same time to keep the language as simple as possible [Wi88b]. So the question here is: which is the one essential feature to enable exception handling. 
 
-The above considerations suggest that this feature must be a dynamic non-local exit with a record representing the exception type. Oberon already has type extension, so handling groups of exceptions can be supported like in C++ or Java. Lua and MacLisp demonstrated, that actually only two functions are required to realize dynamic non-local exit with value transmission: a throw and a catch function. 
+The above considerations suggest that this feature must be the dynamic non-local exit with a record representing the exception type. Oberon already has type extension, so handling groups of exceptions can be supported like in C++ or Java. Lua and MacLisp demonstrated, that actually only two functions are required to realize dynamic non-local exit with value transmission: a throw and a catch function. 
 
-In the spirit of Oberon, to make the language as simple as possible, an approach based on two predeclared procedures, without changing the syntax, seems very attractive. Let's call these procedures `PCALL()` (as in Lua because of the similarity) and `RAISE()` (as in Ada, ISO Modula-2 and most other Pascal descendants). ISO Modula-2 - in contrast to C++, Ada, C# or Java - supports resumption semantics, which is likely the reason why dedicated syntax was necessary; I concur with [St94] that termination semantics is simpler, cleaner and powerful enough. 
+In the spirit of Oberon, to make the language as simple as possible, an approach based on two predeclared procedures, without changing the syntax, seems very attractive. Let's call these procedures `PCALL()` (as in Lua because of the similarity) and `RAISE()` (as in Ada, ISO Modula-2 and most other Pascal descendants). ISO Modula-2 - in contrast to C++, Ada, C# or Java - supports resumption semantics, which is likely the reason why a special syntax for handlers was necessary; I concur with [St94] that termination semantics is simpler, cleaner and powerful enough. 
 
 PCALL() expects a procedure-typed argument, for the procedure to be called, and each argument or this procedure (if any). We already have a predeclared procedure with a parameter of varying type and a variable number of additional parameters, namely `NEW()`; when used to instantiate records, NEW() receives a pointer to the corresponding record type; when used to instantiate arrays, NEW() receives a pointer to the array type and a length for each (open) dimension. So this concept is not new to Oberon. The compiler is able to check the number and type compatibility of the arguments in a similar way it is done for NEW(). 
 
@@ -88,44 +91,32 @@ begin
   case res of
   | Exception: println("got Exception")
   | anyrec: println("got anyrec")
+  | nil: println("no exception")
   else
-    println("no or unknown exception")
+    println("unknown exception")
   end
 end Exception
 ```
 
-
-
 #### References
 
-[Ad86] United States Government (1986). Rationale for the Design of the Ada Programming Language (Ada'83 Rationale). http://archive.adaic.com/standards/83rat/html/ratl-00.html (accessed 2022-05-14).
-
-[Ie06] Ierusalimschy, R., et al. (2006). Lua 5.1 reference manual. https://www.lua.org/manual/5.1/ (accessed 2022-05-14).
-
-[Mc61] McCarthy, J., et al. (1961). LISP 1.5 programmer's manual. 1nd Edition, Jul 14 1961. Computation Center & Research Lab of Electronics at MIT.
-
-[Mi97] Milner, R., et al. (1997). The definition of standard ML: revised. MIT press.
-
-[Mo91] Mössenböck, H., & Wirth, N. (1991). The programming language Oberon-2. Structured Programming, 12(4), 179-196.
-
-[Re87] Rehmer, K. (1987). Error handling using Modula-2. ACM SIGPLAN Notices, 22(3), 40-48.
-
-[Sc96] Schoenhacker, M., & Pronk, C. (1996). ISO/IEC 10514–1, the standard for Modula-2: changes, clarifications and additions. ACM SIGPLAN Notices, 31(8), 84-95.
-
-[St94] Stroustrup, B. (1994). The design and evolution of C++. Addison-Wesley.
-
-[St96] Steele, G. L., & Gabriel, R. P. (1996). The evolution of Lisp. In History of programming languages---II (pp. 233-330).
-
-[Wi16] Wirth, N. (2016). The Programming Language Oberon. https://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf (accessed 2020-11-16).
-[Wi88a] Wirth, N. (1988). From modula to oberon. Softw., Pract. Exper., 18: 661-670. 
-
-[Wi88b] Wirth, N. (1988). The programming language Oberon. Softw., Pract. Exper., 18(7), 671-690.
-
-[Wi88c] Wirth, N. (1988). Programming in Modula-2. 4th Edition. Springer-Verlag.
+- [Ad86] United States Government (1986). Rationale for the Design of the Ada Programming Language (Ada'83 Rationale). http://archive.adaic.com/standards/83rat/html/ratl-00.html (accessed 2022-05-14).
+- [Ie06] Ierusalimschy, R., et al. (2006). Lua 5.1 reference manual. https://www.lua.org/manual/5.1/ (accessed 2022-05-14).
+- [Mc61] McCarthy, J., et al. (1961). LISP 1.5 programmer's manual. 1nd Edition, Jul 14 1961. Computation Center & Research Lab of Electronics at MIT.
+- [Mi97] Milner, R., et al. (1997). The definition of standard ML: revised. MIT press.
+- [Mo91] Mössenböck, H., & Wirth, N. (1991). The programming language Oberon-2. Structured Programming, 12(4), 179-196.
+- [Re87] Rehmer, K. (1987). Error handling using Modula-2. ACM SIGPLAN Notices, 22(3), 40-48.
+- [Sc96] Schoenhacker, M., & Pronk, C. (1996). ISO/IEC 10514–1, the standard for Modula-2: changes, clarifications and additions. ACM SIGPLAN Notices, 31(8), 84-95.
+- [St94] Stroustrup, B. (1994). The design and evolution of C++. Addison-Wesley.
+- [St96] Steele, G. L., & Gabriel, R. P. (1996). The evolution of Lisp. In History of programming languages---II (pp. 233-330).
+- [Wi16] Wirth, N. (2016). The Programming Language Oberon. https://people.inf.ethz.ch/wirth/Oberon/Oberon07.Report.pdf (accessed 2020-11-16).
+- [Wi88a] Wirth, N. (1988). From modula to oberon. Softw., Pract. Exper., 18: 661-670. 
+- [Wi88b] Wirth, N. (1988). The programming language Oberon. Softw., Pract. Exper., 18(7), 671-690.
+- [Wi88c] Wirth, N. (1988). Programming in Modula-2. 4th Edition. Springer-Verlag.
 
 
 Pending:
 - If we had record literals, we could pass a record by value to RAISE(), without declaring a pointer to record and calling NEW().
-- Type CASE should support NIL labels.
-- What about non-local access and PCALL?
+- What about non-local access and PCALL? Should it be supported?
+- If a proc called via PCALL which has VAR params throws an exception or calls a proc which raises an exception the state of the object handed in by VAR is random (CLR keeps all changes up to the RAISE, C goes back before the PCALL).
 
