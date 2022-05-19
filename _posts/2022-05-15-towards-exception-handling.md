@@ -98,6 +98,8 @@ begin
 end Exception
 ```
 
+Here is [the specification](https://github.com/oberon-lang/specification/blob/master/The_Programming_Language_Oberon%2B.adoc#912-exception-handling)
+
 #### References
 
 - [Ad86] United States Government (1986). Rationale for the Design of the Ada Programming Language (Ada'83 Rationale). http://archive.adaic.com/standards/83rat/html/ratl-00.html (accessed 2022-05-14).
