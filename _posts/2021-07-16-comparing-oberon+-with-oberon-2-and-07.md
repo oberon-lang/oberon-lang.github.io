@@ -5,7 +5,7 @@ author: Rochus Keller
 ---
 (Updated 2022-05-18)
 
-The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2 language definitions. Since both Oberon-2 and Oberon-07 are an extension of the first Oberon version (1987 and 1990), the Oberon+ language definition therefore also includes the original Oberon language. This means, that in principle each program written in Oberon up to Oberon-2 and including Oberon-07 is compatible with the Oberon+ compiler. There is one exception at which we will look below.
+The Oberon+ language definition started as a union of the Oberon-07 and Oberon-2 language definitions. Since both Oberon-2 and Oberon-07 are an extension of the first Oberon version (1987 and 1990), the Oberon+ language definition therefore also includes the original Oberon language. This means that each program written in Oberon up to Oberon-2 and including Oberon-07 is compatible with the Oberon+ compiler. 
 
 [Oberon-2](http://www.ssw.uni-linz.ac.at/Research/Papers/Oberon2.pdf) added the following elements to the original Oberon:
 
