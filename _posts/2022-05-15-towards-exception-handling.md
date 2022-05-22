@@ -4,6 +4,8 @@ title:  Towards Oberon+ Exception Handling
 author: Rochus Keller
 ---
 
+(Updated 2020-05-22)
+
 #### State of error handling in Oberon and Modula-2
 Original Oberon has little provisions for handling error conditions. The Oberon-07 specification [Wi16] doesn't mention errors at all; neither do the Oberon-2 [Mo91] nor the original Oberon specification [Wi88b], but both define the `HALT()` predefined procedure to terminate the program, and both specify conditions under which the program execution is automatically aborted (e.g. if the dynamic type doesn't meet a type guard). 
 
@@ -65,7 +67,7 @@ The above considerations suggest that this feature must be the dynamic non-local
 
 In the spirit of Oberon, to make the language as simple as possible, an approach based on two predeclared procedures, without changing the syntax, seems very attractive. Let's call these procedures `PCALL()` (as in Lua because of the similarity) and `RAISE()` (as in Ada, ISO Modula-2 and most other Pascal descendants). ISO Modula-2 - in contrast to C++, Ada, C# or Java - supports resumption semantics, which is likely the reason why a special syntax for handlers was necessary; I concur with [St94] that termination semantics is simpler, cleaner and powerful enough. 
 
-PCALL() expects a procedure-typed argument, for the procedure to be called, and each argument or this procedure (if any). We already have a predeclared procedure with a parameter of varying type and a variable number of additional parameters, namely `NEW()`; when used to instantiate records, NEW() receives a pointer to the corresponding record type; when used to instantiate arrays, NEW() receives a pointer to the array type and a length for each (open) dimension. So this concept is not new to Oberon. The compiler is able to check the number and type compatibility of the arguments in a similar way it is done for NEW(). 
+PCALL() expects a procedure-typed argument, for the procedure to be called, and each argument or this procedure (if any). We already have a predeclared procedure with a parameter of varying type and a variable number of additional parameters, namely `NEW()`; when used to instantiate records, NEW() receives a pointer to the corresponding record type; when used to instantiate arrays, NEW() receives a pointer to the array type and a length for each (open) dimension. So this concept is not new to Oberon. The compiler is able to check the number and type compatibility of the arguments in a similar way it is done for NEW(). It is also possible to support non-local access.
 
 RAISE() expects a POINTER TO ANYREC which shall not be NIL (otherwise the program execution is aborted). ANYREC is already defined in Oberon+ as predeclared record type of which each RECORD is an implicit extension. If RAISE() is called without a preceding call of PCALL() on the call chain the program execution is aborted; a compiler is able to recognize and report such an error. Also a variant of RAISE() without parameter would make sense, if just a non-local exit was intended, not throwing an exception; in that case RAISE() could use an internal instance of ANYREC to avoid NIL.
 
@@ -119,6 +121,5 @@ Here is [the specification](https://github.com/oberon-lang/specification/blob/ma
 
 Pending:
 - If we had record literals, we could pass a record by value to RAISE(), without declaring a pointer to record and calling NEW().
-- What about non-local access and PCALL? Should it be supported?
 - If a proc called via PCALL which has VAR params throws an exception or calls a proc which raises an exception the state of the object handed in by VAR is random (CLR keeps all changes up to the RAISE, C goes back before the PCALL).
 
