@@ -137,9 +137,11 @@ If you are looking for representative size examples, see
 A compiler is available which generates CLI/ECMA-335 bytecode and C99 source code. There is also an IDE with semantic navigation, and source and bytecode level debugger (see [screenshot](http://software.rochus-keller.ch/obxide_0.7.13.png)).
 
 - [Source code (Github)](https://github.com/rochus-keller/Oberon)
-- [Windows version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)
+- [Windows 32 bit version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win32.zip)
+- [Windows 64 bit version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_win64.zip)
 - [macOS version (mount and run)](http://software.rochus-keller.ch/OberonIDE_macOS_x64.dmg)
-- [Linux i386 version (unpack and run, requires Qt 5)](http://software.rochus-keller.ch/OberonIDE_linux_i386.tar.gz)
+- [Linux 32 bit version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_linux_i386.tar.gz)
+- [Linux 64 bit version (unpack and run)](http://software.rochus-keller.ch/OberonIDE_linux_x86_64.tar.gz)
 
 [![Screenshot of the Oberon+ IDE](http://software.rochus-keller.ch/obxide_0.7.13.png)](https://github.com/rochus-keller/Oberon/blob/master/README.md#the-oberon-ide)
 
