@@ -4,7 +4,7 @@ title:  Towards Oberon+ Exception Handling
 author: Rochus Keller
 ---
 
-(Updated 2020-05-22)
+(Updated 2022-05-22)
 
 #### State of error handling in Oberon and Modula-2
 Original Oberon has little provisions for handling error conditions. The Oberon-07 specification [Wi16] doesn't mention errors at all; neither do the Oberon-2 [Mo91] nor the original Oberon specification [Wi88b], but both define the `HALT()` predefined procedure to terminate the program, and both specify conditions under which the program execution is automatically aborted (e.g. if the dynamic type doesn't meet a type guard). 
