@@ -386,7 +386,7 @@ It is therefore feasible to stick to a high-level concurrency concept in a progr
 
 #### Elaboration of Oberon+ concurrency
 
-From the previous sections we can conclude, that message passing based on channels is an optimal fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established over the last fourty years as an improvement over low-level concurrency primitives, and also over monitors. The ever popularity and success of the Go programming language is also a good indicator that channels are the way to go. 
+From the previous sections we can conclude, that message passing based on channels is an optimal fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established over the last forty years as an improvement over low-level concurrency primitives, and also over monitors. The ever popularity and success of the Go programming language is also a good indicator that channels are the way to go. 
 
 The concept is introduced with as few syntax extensions as possible and reasonable, and the already established concept of built-in procedures is preferred over a library implementation.
 
