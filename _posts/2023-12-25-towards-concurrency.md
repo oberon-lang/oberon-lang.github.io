@@ -25,21 +25,22 @@ A monitor in MODULA is represented by an "interface module". Calls to procedures
 Here is a part of the example in [3] page 27 demonstrating some of the multiprocessing facilities:
 ```
 interface module resourcereservation;
-	define semaphore,P,V,init;
-	type semaphore = record taken: Boolean; free: siqnal end;
-	
-	procedure P(var s: semaphore);
-	begin if s.taken then wait(s.free) end;
-		s.taken := true
-	end P;
+    define semaphore,P,V,init;
+    type semaphore = record taken: Boolean; 
+         free: siqnal end;
+    
+    procedure P(var s: semaphore);
+    begin if s.taken then wait(s.free) end;
+        s.taken := true
+    end P;
 
-	procedure V(var s: semaphore);
-	begin s.taken := false; send(s.free)
-	end V;
+    procedure V(var s: semaphore);
+    begin s.taken := false; send(s.free)
+    end V;
 
-	procedure init(var s: semaphore)
-	begin s.taken := false
-	end init;
+    procedure init(var s: semaphore)
+    begin s.taken := false
+    end init;
 end resourcereservation
 ```
 The multiprocessing facilities of MODULA were no longer present in Modula-2. Wirth writes in [4]: "There was no clear favorite way to express
@@ -51,32 +52,32 @@ In contrast to MODULA, there are no dedicated language constructs for multiproce
 Here is the example in [6] page 124 demonstrating Modula-2 multiprocessing:
 ```
 MODULE Buffer [1];
-	EXPORT deposit, fetch;
-	IMPORT SIGNAL, SEND, WAIT, Init, ElementType;
-	CONST N = 128; (*buffer size*)
-	VAR n: [0 .. N]; (*no. of deposited elements*)
-		nonfull: SIGNAL; (* n < N *)
-		nonempty: SIGNAL; (* n > 0 *)
-		in, out: [0 .. N-1]; (*indices*)
-		buf: ARRAY [0 .. N-1] OF ElementType;
-		
-	PROCEDURE deposit(x: ElementType);
-	BEGIN
-		IF n = N THEN WAIT(nonfull) END;
-		(* n < N *) n := n+1; (* 0 < n <= N *)
-		buf[in] := x; in := (in+1) MOD N;
-		SEND(nonempty)
-	END deposit;
-	
-	PROCEDURE fetch (VAR x: ElementType);
-	BEGIN
-		IF n = 0 THEN WAIT(nonempty) END;
-		(* n > 0 *) n := n-1; (* 0 <= n < N *)
-		x := buf[out]; out := (out+1) MOD N;
-		SEND(nonfull)
-	END fetch;
+    EXPORT deposit, fetch;
+    IMPORT SIGNAL, SEND, WAIT, Init, ElementType;
+    CONST N = 128; (*buffer size*)
+    VAR n: [0 .. N]; (*no. of deposited elements*)
+        nonfull: SIGNAL; (* n < N *)
+        nonempty: SIGNAL; (* n > 0 *)
+        in, out: [0 .. N-1]; (*indices*)
+        buf: ARRAY [0 .. N-1] OF ElementType;
+        
+    PROCEDURE deposit(x: ElementType);
+    BEGIN
+        IF n = N THEN WAIT(nonfull) END;
+        (* n < N *) n := n+1; (* 0 < n <= N *)
+        buf[in] := x; in := (in+1) MOD N;
+        SEND(nonempty)
+    END deposit;
+    
+    PROCEDURE fetch (VAR x: ElementType);
+    BEGIN
+        IF n = 0 THEN WAIT(nonempty) END;
+        (* n > 0 *) n := n-1; (* 0 <= n < N *)
+        x := buf[out]; out := (out+1) MOD N;
+        SEND(nonfull)
+    END fetch;
 BEGIN n := 0; in := 0; out:= 0;
-	Init(nonfull); Init(nonempty)
+    Init(nonfull); Init(nonempty)
 END Buffer.
 ```
 Interestingly, no critical section control is provided for the body of the deposit and fetch procedures, which might not be suited for true multi-processor parallelism.
@@ -87,31 +88,32 @@ Concurrent Pascal appeared about a year before MODULA. The MODULA report [3] ref
 
 Here is an example from [8]:
 ```
-type diskbuffer = monitor(consoleaccess, diskaccess: resource; base, limit: integer);
-		var disk: virtualdisk; sender, receiver: queue;
-			head, tail, length: integer;
-		
-		procedure entry send(block: page);
-		begin
-			if length = limit then delay(sender);
-			disk.write(base + tail, block);
-			tail := (tail + 1) mod limit;
-			length := length + 1;
-			continue(receiver);
-		end;
-	
-		procedure entry receive(var block: page);
-		begin
-			if length = 0 then delay(receiver);
-			disk.read(base + head, block);
-			head := (head + 1) mod limit;
-			length := length − 1;
-			continue(sender);
-		end;
-	begin “initial statement”
-		init disk(consoleaccess, diskaccess);
-		head := 0; tail := 0; length := 0;
-	end
+type diskbuffer = monitor(consoleaccess, diskaccess: 
+                          resource; base, limit: integer);
+        var disk: virtualdisk; sender, receiver: queue;
+            head, tail, length: integer;
+        
+        procedure entry send(block: page);
+        begin
+            if length = limit then delay(sender);
+            disk.write(base + tail, block);
+            tail := (tail + 1) mod limit;
+            length := length + 1;
+            continue(receiver);
+        end;
+    
+        procedure entry receive(var block: page);
+        begin
+            if length = 0 then delay(receiver);
+            disk.read(base + head, block);
+            head := (head + 1) mod limit;
+            length := length − 1;
+            continue(sender);
+        end;
+    begin “initial statement”
+        init disk(consoleaccess, diskaccess);
+        head := 0; tail := 0; length := 0;
+    end
 ```
 A monitor here is a regular type (which supports multiple instances), not a module. There is also a class type with similar properties as a monitor, but guaranteed at compile time. It is alsoworth mentioning that in Concurrent Pascal the declaration of monitor and class types enclose the procedure declarations - a concept that is later also found in Object Pascal or e.g. Active Oberon. Further, MODULA directly supports the condition variables described in [5], wheras Concurrent Pascal supports a process queue type, which is essentially equivalent to a condition variable.
 
@@ -135,7 +137,8 @@ begin
     ...
 end time_server;
 
-timeserver.read_time(time_now) ; -- rendezvous happens here
+-- rendezvous happens here:
+timeserver.read_time(time_now) ; 
 ```
 The calling thread blocks until the implementation of read_time is finished and a value is returned to time_now. There are much more complicated options than shown here (including selective waiting) and there are also well-studied issues [12].
 
@@ -147,16 +150,16 @@ Here is the Fibonacci example from [14] page 18:
 ```
 type func = [val(integer)];
 agent fibonacci(f: func; x: integer);
-	var g, h: func; y, z: integer;
-	begin
-		if x <= 1 then 
-			f!val(x)
-		else
-			begin
-				+g; fibonacci(g, x − 1);
-				+h; fibonacci(h, x − 2);
-				g?val(y); h?val(z); f!val(y + z)
-			end
+    var g, h: func; y, z: integer;
+    begin
+        if x <= 1 then 
+            f!val(x)
+        else
+            begin
+                +g; fibonacci(g, x − 1);
+                +h; fibonacci(h, x − 2);
+                g?val(y); h?val(z); f!val(y + z)
+            end
 end;
 ```
 The recursive calls of the "fibonacci" procedure start agents which run concurrently and communicate by means of the dynamically created "g" and "h" channels.
@@ -164,28 +167,29 @@ The recursive calls of the "fibonacci" procedure start agents which run concurre
 Another example from [14] is this monitor that implements a non-terminating ring buffer accessed via channels:
 ```
 agent buffer(inp, out: stream);
-	const n = 10;
-	type contents = array [1..n] of integer;
-		 var head, tail, length: integer;
-		 ring: contents;
+    const n = 10;
+    type contents = array [1..n] of integer;
+         var head, tail, length: integer;
+         ring: contents;
 begin
-	head := 1; tail := 1; length := 0;
-	while true do
-		poll
-			inp?int(ring[tail]) & length < n −>
-				tail := tail mod n + 1;
-				length := length + 1|
-			out!int(ring[head]) & length > 0 −>
-				head := head mod n + 1;
-				length := length − 1
-		end
+    head := 1; tail := 1; length := 0;
+    while true do
+        poll
+            inp?int(ring[tail]) & length < n −>
+                tail := tail mod n + 1;
+                length := length + 1|
+            out!int(ring[head]) & length > 0 −>
+                head := head mod n + 1;
+                length := length − 1
+        end
 end;
 ```
 An empty buffer may input a message only. A full buffer may output only. When the buffer contains at least one and at most n-1 values, it is ready either to input or to output a message.
 
 Here are the relevant syntax definitions:
 ```
-Program = [ ConstantDefinitionPart ] [ TypeDefinitionPart } AgentProcedure
+Program = [ ConstantDefinitionPart ] [ TypeDefinitionPart ] 
+          AgentProcedure
 AgentProcedure = "agent" AgentName ProcedureBlock ";"
 AgentStatement = AgentName [ "(" ActualParameterList ")" ]
 
@@ -198,7 +202,8 @@ InputCommand = PortAccess "?" InputSymbol
 InputSymbol = SymbolName [ "(" VariableAccess ")" ]
 
 PollingStatement = "poll" GuardedStatementList "end"
-GuardedStatementList = GuardedStatement { "|" GuardedStatement }
+GuardedStatementList = GuardedStatement 
+                      { "|" GuardedStatement }
 GuardedStatement = Guard "->" StatementList
 Guard = InputOutputCommand [ "&" Expression ]
 ```
@@ -221,7 +226,8 @@ send-statement = “send” “(” send-parameters “)”
 receive-statement = “receive” “(” receive-parameters “)”
 
 parallel-statement = “parallel” process-statement-list “end”
-forall-statement = “forall” index-variable-declaration “do” element-statement
+forall-statement = “forall” index-variable-declaration “do” 
+                   element-statement
 ```
 Both in Joyce and SuperPascal, ports or channels are reference types and thus support indirect naming. In both languages a channel can transport different message types, but in Joyce the message type is detected by a token and in SuperPascal by the order of arrival. SuperPascal has no longer a poll statement. The author writes in [20]: "I have not found it necessary to use a statement that enables a parallel process to poll several channels until a communication takes place on one of them. Nondeterministic communication is necessary at the hardware level in a routing network, but appears to be of minor importance in parallel programs for computational science."
 
@@ -243,9 +249,10 @@ The same applies to Oberon-2 and Oberon-07, but there was an independent effort 
 
 ```
 DEFINITION Coroutines;
-	TYPE Coroutine = RECORD END; Body = PROCEDURE;
-	PROCEDURE Init (body: Body; stackSize: LONGINT; VAR cor: Coroutine);
-	PROCEDURE Transfer (VAR from, to: Coroutine);
+    TYPE Coroutine = RECORD END; Body = PROCEDURE;
+    PROCEDURE Init (body: Body; stackSize: LONGINT; 
+                    VAR cor: Coroutine);
+    PROCEDURE Transfer (VAR from, to: Coroutine);
 END Coroutines.
 ```
 
@@ -262,36 +269,37 @@ IMPORT Out, Buffers;
 CONST N = 2000; Terminate = -1;
 
 TYPE Sieve = OBJECT (Buffers.Buffer)
-	VAR prime, n: INTEGER; next: Sieve;
+    VAR prime, n: INTEGER; next: Sieve;
 
-	PROCEDURE & Init;
-	BEGIN
-		Initˆ;
-		prime := 0; next := NIL
-	END Init;
+    PROCEDURE & Init;
+    BEGIN
+        Initˆ;
+        prime := 0; next := NIL
+    END Init;
 
-	BEGIN {ACTIVE}
-		LOOP
-			Get(n);
-			IF n = Terminate THEN
-				IF next # NIL THEN next.Put (n) END;
-				EXIT
-			ELSIF prime = 0 THEN
-				Out.Int(n, 0); Out.String(" is prime"); Out.Ln;
-				prime := n;
-				NEW (next)
-			ELSIF (n MOD prime) # 0 THEN
-				next.Put (n)
-			END
-		END
+    BEGIN {ACTIVE}
+        LOOP
+            Get(n);
+            IF n = Terminate THEN
+                IF next # NIL THEN next.Put (n) END;
+                EXIT
+            ELSIF prime = 0 THEN
+                Out.Int(n, 0); Out.String(" is prime"); 
+                Out.Ln;
+                prime := n;
+                NEW (next)
+            ELSIF (n MOD prime) # 0 THEN
+                next.Put (n)
+            END
+        END
 END Sieve;
 
 PROCEDURE Start*;
 VAR s: Sieve; i: INTEGER;
 BEGIN
-	NEW(s);
-	FOR i := 2 TO N-1 DO s.Put (i) END;
-	s.Put(Terminate)
+    NEW(s);
+    FOR i := 2 TO N-1 DO s.Put (i) END;
+    s.Put(Terminate)
 END Start;
 
 END Eratosthenes.
@@ -356,27 +364,27 @@ But it is also possible to emulate low-level concurrency primitives based on the
 How a semaphore can be implemented using Go channels is demonstrated in [29]; here is the relevant code:
 ```
 type semaphore struct {    
-	semC chan struct{}
+    semC chan struct{}
 }
 
 func New(maxConcurrency int) Semaphore {    
-	return &semaphore{        
-		semC: make(chan struct{}, maxConcurrency),    
-	}
+    return &semaphore{        
+        semC: make(chan struct{}, maxConcurrency),    
+    }
 }
 
 func (s *semaphore) Acquire() {    
-	s.semC <- struct{}{}
+    s.semC <- struct{}{}
 }
 
 func (s *semaphore) Release() {    
-	<-s.semC
+    <-s.semC
 }
 ```
 It is therefore feasible to stick to a high-level concurrency concept in a programming language. If really necessary, one can always offer low-level primitives via a library, as e.g. done in Go [27].
 
 
-#### Elaboration of Oberon concurrency
+#### Elaboration of Oberon+ concurrency
 
 From the previous sections we can conclude, that message passing based on channels is an optimal fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established over the last fourty years as an improvement over low-level concurrency primitives, and also over monitors. The ever popularity and success of the Go programming language is also a good indicator that channels are the way to go. 
 
@@ -385,7 +393,8 @@ The concept is introduced with as few syntax extensions as possible and reasonab
 The Oberon+ syntax shall be extended as follows:
 
 ```
-type = NamedType | enumeration | ArrayType | RecordType | PointerType | ProcedureType | ChannelType
+type = NamedType | enumeration | ArrayType | RecordType | 
+       PointerType | ProcedureType | ChannelType
 
 ChannelType = CHANNEL [ length ] OF type
 
@@ -399,9 +408,13 @@ A channel is a value type with the special rule that it cannot be copied (i.e. a
 In addition the following procedures are predeclared (pseudo-syntax):
 
 ```
-PROCEDURE SEND(VAR c1: CHANNEL OF T1; v1: T1 { ';' VAR cN: CHANNEL OF Tn; vN: Tn } ):INTEGER;
+PROCEDURE SEND(VAR c1: CHANNEL OF T1; v1: T1 
+              { ';' VAR cN: CHANNEL OF Tn; vN: Tn } ):
+              INTEGER;
 
-PROCEDURE RECEIVE(VAR c1: CHANNEL OF T1; VAR v1: T1 { ';' VAR cN: CHANNEL OF Tn; VAR vN: Tn } ):INTEGER;
+PROCEDURE RECEIVE(VAR c1: CHANNEL OF T1; VAR v1: T1 
+              { ';' VAR cN: CHANNEL OF Tn; VAR vN: Tn } ):
+              INTEGER;
 
 PROCEDURE CLOSE(VAR c);
 ```
@@ -419,7 +432,8 @@ The CLOSE procedure sets the channel status to closed. Once called, a channel ca
 SEND, RECEIVE and CLOSE modify the channel state, i.e. don't work with IN parameters or receivers.
 
 ```
-PROCEDURE FORK(p: ProcedureType [ ';' a1: T1 { ';' aN: Tn } ]);
+PROCEDURE FORK(p: ProcedureType 
+              [ ';' a1: T1 { ';' aN: Tn } ]);
 ```
 Calling FORK executes the procedure p with actual arguments a1 to aN in a new thread. The procedure p cannot have variable parameters, and must not be a predeclared, nor a type-bound procedure, nor may it access local variables or parameters declared in outer (type-bound) procedures or call procedure which access local variables or parameters declared in outer (type-bound) procedures. The actual arguments must be compatible with the formal parameters of p. If a new thread cannot be started, the program halts. The specification does not prescribe what type of thread this should be (i.e. the program cannot assume that threads are e.g. light-weight).
 
