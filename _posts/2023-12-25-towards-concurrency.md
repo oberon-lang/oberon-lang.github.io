@@ -309,7 +309,7 @@ But what actually is an "active object"? An active object essentially correspond
 
 From this perspective, object types in Active Oberon are nothing but plain old monitors [5], as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also less flexible; and beyond that, the "conditional wait" was already proposed by Brinch Hansen and Hoare in 1972 [5]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language).
 
-All in all, it has to be concluded that Oberon either omits the important topic of concurrency altogether, or only considers it in an outdated form that ignores almost thirty years of research.
+All in all, it has to be concluded that Oberon either omits the important topic of concurrency altogether, or only considers it in an outdated form that ignored almost thirty years of research when published.
 
 #### Influencing factors
 
@@ -323,7 +323,7 @@ Concurrency can be implemented in a programming language by
 - built-in types and procedures (without special syntax)
 - dedicated syntax
 
-As we saw, Modula-2 does well with a library-only implementation of concurrency without dedicated syntax or built-in types or procedures. In contrast, Concurrent Pascal, Ada83, Joyce and Newsqueak decided for a dedicated syntax. MODULA and Super Pascal, on the other hand, use a mixture of dedicated syntax and built-in procedures. Yet another approach is used in Active Oberon, which added a generic attribute syntax to the otherwise original Oberon syntax, where attributes are just identifiers with arbitrary dedication of meaning.
+As we saw, Modula-2 does well with a library-only implementation of concurrency without dedicated syntax or built-in types or procedures. In contrast, Concurrent Pascal, Ada83, Joyce and Newsqueak decided for a dedicated syntax. MODULA and Super Pascal, on the other hand, use a mixture of dedicated syntax and built-in procedures. Yet another approach is used in Active Oberon, which added a generic attribute syntax, where attributes are just identifiers with arbitrary dedication of meaning.
 
 When do we need dedicated syntax? Apparently no dedicated syntax is needed for low-level concurrency primitives like mutexes, condition variables (including wait and signal procedures) and threads, which can be well implemented even with a library. In Modula-2, the Processes module can even be implemented in Modula-2 itself to a certain degree, using a few low-level primitives represented with built-in types and procedures. On the other hand, structural, more high-level features like monitors or critical sections are unhandy or even infeasible without some degree of dedicated syntax. Message passing and channels are a borderline case. If e.g. type-safe channels are required, the language either needs type casting features to bypass the type checking of the compiler, and even some kind of address operator if type casting of structured value types is required, or a dedicated syntax with typed channels; but in case of channels also built-in types and procedures would do the job in principle. So there is a trade-off and it is therefore important to carefully balance the options.
 
@@ -343,7 +343,7 @@ Oberon's official philosophy is "as simple as possible"; however, if you look at
 
 ##### Language complexity
 
-If concurrency can be fully covered by a library, this obviously doesn't increase the complexity of the language - though it very likely increases the complexity of the code using the library. On the other hand, if we add low-level concurrency constructs to the syntax, both the language and the code written in the language become more complex. It is reasonable to assume that if the right high-level constructs are added to the language, a little extra complexity in the language can contribute to a significant complexity reduction in the code that is written in the language. Conversely, it can also be observed that a language with overly minimalist properties simply shifts the complexity into the code. The challenge is therefore to find the right balance.
+If concurrency can be fully covered by a library, this obviously doesn't increase the complexity of the language - though it very likely increases the complexity of the code using the library. On the other hand, if we add low-level concurrency constructs to the syntax, both the language and the code written in the language become more complex. It is reasonable to assume that if the right high-level constructs are added to the language, a little extra complexity in the language can contribute to a significant complexity reduction in the code that is written in the language. Conversely, it can also be observed that a language with overly minimalist properties simply shifts the complexity into the code. The challenge is therefore again to find the right balance.
 
 As already mentioned, Hoare demonstrated with CSP, how data exchange among threads and the synchronisation of this exchange can be combined, thus reducing complexity. 
 
@@ -393,15 +393,15 @@ The concept is introduced with as few syntax extensions as possible and reasonab
 The Oberon+ syntax shall be extended as follows:
 
 ```
-type = NamedType | enumeration | ArrayType | RecordType | 
-       PointerType | ProcedureType | ChannelType
+type = NamedType | enumeration | ArrayType | RecordType
+       | PointerType | ProcedureType | ChannelType
 
 ChannelType = CHANNEL [ length ] OF type
 
 length     = ConstExpression
 ```
 
-A channel declaration is similar to an array declaration. The new reserved word `CHANNEL` declares a channel of a specific base type. In contrast to Joyce and similarly to Go, a channel has exactly one type, and this type is not restricted (i.e. it can also be a channel or pointer type). If length is missing or 0, an unbuffered channel is declared; if length is a natural number, a buffered channel is declared.
+A channel declaration is similar to an array declaration. The new reserved word `CHANNEL` declares a channel of a specific base type. In contrast to Joyce and similarly to Go, a channel has exactly one type, and this type is not restricted (i.e. it can also be pointer type). If length is missing or 0, an unbuffered channel is declared; if length is a natural number, a buffered channel is declared.
 
 A channel is a value type with the special rule that it cannot be copied (i.e. assigned or passed as a value parameter). If a channel is a field of a record type, instances of this record type or its subtypes can no longer be copied. A channel can be passed by reference or be the base type of a pointer. Channel types are compatible if they have equal base types. If a channel is the base type of a pointer, the channel has to be allocated by the NEW() built-in procedure; if the length in the channel declaration is missing, NEW() can have an optional length parameter.
 
