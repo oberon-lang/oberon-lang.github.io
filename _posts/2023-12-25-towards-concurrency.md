@@ -4,6 +4,8 @@ title:  Towards Oberon+ Concurrency
 author: Rochus Keller
 ---
 
+(Updated 2023-12-26)
+
 (subject to public review until further notice)
 
 #### What is concurrency
@@ -408,28 +410,47 @@ A channel is a value type with the special rule that it cannot be copied (i.e. a
 In addition the following procedures are predeclared (pseudo-syntax):
 
 ```
-PROCEDURE SEND(VAR c1: CHANNEL OF T1; v1: T1 
-              { ';' VAR cN: CHANNEL OF Tn; vN: Tn } ):
-              INTEGER;
+PROCEDURE SEND(VAR c: CHANNEL OF T; v: T ):
+              BOOLEAN;
 
-PROCEDURE RECEIVE(VAR c1: CHANNEL OF T1; VAR v1: T1 
-              { ';' VAR cN: CHANNEL OF Tn; VAR vN: Tn } ):
-              INTEGER;
-
-PROCEDURE CLOSE(VAR c);
+PROCEDURE RECEIVE(VAR c: CHANNEL OF T; VAR v: T ):
+                 BOOLEAN;
 ```
 
 The SEND procedure transmits the value of the actual parameter v to the channel c. If the channel c is unbuffered or the buffer is full, the call blocks until another thread calls RECEIVE or CLOSE on the channel.
 
 The RECEIVE procedure reads a value from the channel c and stores it in the variable v. If the channel c is unbuffered or the buffer is empty, the call blocks until another thread calls SEND or CLOSE on the channel.
 
-Calling SEND or RECEIVE with more than one actual channel parameters selects the first of the channels ready to communicate and transmits/receives the corresponding value/variable. If several channels are ready to communicate at once, one of them is randomly selected. The call blocks until at least one channel is ready to communicate, or CLOSE was called on at least one channel. 
+The call to SEND or RECEIVE returns TRUE on success or FALSE if the channel was closed before or during the call.
 
-The call to SEND or RECEIVE returns the index (1..n) of the selected channel or 0.
+```
+PROCEDURE CLOSE(VAR c: CHANNEL OF T);
+```
 
 The CLOSE procedure sets the channel status to closed. Once called, a channel cannot be reopened again. Calling CLOSE on an already closed channel has no effect.
 
-SEND, RECEIVE and CLOSE modify the channel state, i.e. don't work with IN parameters or receivers.
+```
+PROCEDURE SELECT(n: INTEGER 
+                 { ; VAR c_i: CHANNEL OF T_i; VAR v_i: T_i } 
+                 { ; VAR c_j: CHANNEL OF T_j; v_j: T_j } 
+                 [ ; non_blocking: BOOLEAN ] ): INTEGER;
+```          
+Calling SELECT selects the first of the channels ready to communicate and transmits/receives the corresponding value/variable. If several channels are ready to communicate at once, one of them is randomly selected. If non_blocking is FALSE, the call blocks until at least one channel is ready to communicate, or CLOSE was called on at least one channel. If non_blocking is TRUE, the call immediately returns. The first parameter n is a constant expression representing the number of input channels, followed by n channel and variable pairs c_i/v_i, followed by m output channel and expression pairs c_j/v_j; the optional non_blocking parameter is assumed FALSE by default. The call to SELECT returns the index (1..n+m) of the selected channel or 0.
+
+SEND, RECEIVE, CLOSE and SELECT modify the channel state, i.e. don't work with IN parameters or receivers.
+
+As an alternative to the SELECT call, this modified version of the WITH statement can be used:
+```
+WITH 
+  SEND(c_i, v_i) DO Si
+  | RECEIVE(c_j, v_j) DO Sj
+  ELSE S
+END;
+```
+For this purpose the definition of Guard is slightly extended:
+```
+Guard = qualident ':' qualident | 'SEND' ActualParameters | 'RECEIVE' ActualParameters
+```
 
 ```
 PROCEDURE FORK(p: ProcedureType 
@@ -437,9 +458,10 @@ PROCEDURE FORK(p: ProcedureType
 ```
 Calling FORK executes the procedure p with actual arguments a1 to aN in a new thread. The procedure p cannot have variable parameters, and must not be a predeclared, nor a type-bound procedure, nor may it access local variables or parameters declared in outer (type-bound) procedures or call procedure which access local variables or parameters declared in outer (type-bound) procedures. The actual arguments must be compatible with the formal parameters of p. If a new thread cannot be started, the program halts. The specification does not prescribe what type of thread this should be (i.e. the program cannot assume that threads are e.g. light-weight).
 
+              
 #### Open issues
 
-- Do we need a non-blocking version of SEND and RECEIVE, especially when used with more than one actuall channel parameter (i.e. similar to the Go select default section)?
+- Do we need the SELECT function, or the extended WITH statement, or both?
 - Are e.g. simulated semaphores based on channels good enough, or do we need low-level concurrency primitives (i.e. as the ones found in the Go sync module)?
  
 #### References
