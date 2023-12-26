@@ -431,9 +431,9 @@ The CLOSE procedure sets the channel status to closed. Once called, a channel ca
 
 ```
 PROCEDURE SELECT(n: INTEGER 
-                 { ; VAR c_i: CHANNEL OF T_i; VAR v_i: T_i } 
-                 { ; VAR c_j: CHANNEL OF T_j; v_j: T_j } 
-                 [ ; non_blocking: BOOLEAN ] ): INTEGER;
+             { ; VAR c_i: CHANNEL OF T_i; VAR v_i: T_i } 
+             { ; VAR c_j: CHANNEL OF T_j; v_j: T_j } 
+             [ ; non_blocking: BOOLEAN ] ): INTEGER;
 ```          
 Calling SELECT selects the first of the channels ready to communicate and transmits/receives the corresponding value/variable. If several channels are ready to communicate at once, one of them is randomly selected. If non_blocking is FALSE, the call blocks until at least one channel is ready to communicate, or CLOSE was called on at least one channel. If non_blocking is TRUE, the call immediately returns. The first parameter n is a constant expression representing the number of input channels, followed by n channel and variable pairs c_i/v_i, followed by m output channel and expression pairs c_j/v_j; the optional non_blocking parameter is assumed FALSE by default. The call to SELECT returns the index (1..n+m) of the selected channel or 0.
 
@@ -449,7 +449,9 @@ END;
 ```
 For this purpose the definition of Guard is slightly extended:
 ```
-Guard = qualident ':' qualident | 'SEND' ActualParameters | 'RECEIVE' ActualParameters
+Guard = qualident ':' qualident 
+        | 'SEND' ActualParameters 
+        | 'RECEIVE' ActualParameters
 ```
 
 ```
