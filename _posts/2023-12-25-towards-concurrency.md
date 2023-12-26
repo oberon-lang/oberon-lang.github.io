@@ -241,7 +241,7 @@ The evolution of Go started in 1985 with a small language called Squeak [16] whi
 
 Newsqueak was followed by Alef in 1995 and by Limbo in 1996. Alef, which was used in the Plan 9 operating system from Bell Labs, can be seen as a compiled version of Newsqueak. It is worth noting that the Oberon system has influenced the parts of Plan 9, which were implemented by the author of Newsqueak [26]. Limbo is very similar to Newsqueak as well; it was used to implement parts of the Inferno operating system from Bell Labs, which is a descendant of Plan 9 and still in use today.
 
-Go adopted the concurrency concept from Newsqueak and added new features, such as buffered channels.
+Go mostly adopted the concurrency concept from Newsqueak with some additional features from other languages, such as buffered channels.
 
 #### Concurrency in Oberon
 
@@ -388,7 +388,7 @@ It is therefore feasible to stick to a high-level concurrency concept in a progr
 
 #### Elaboration of Oberon+ concurrency
 
-From the previous sections we can conclude, that message passing based on channels is an optimal fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established over the last forty years as an improvement over low-level concurrency primitives, and also over monitors. The ever popularity and success of the Go programming language is also a good indicator that channels are the way to go. 
+From the previous sections we can conclude, that message passing based on channels is an optimal fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established over the last forty years as an improvement over low-level concurrency primitives, and also over monitors. The ever popularity and success of the Go programming language is also a good indicator that channels are the way to go. Also feedback from public discussions about previous versions of this paper has been taken into consideration [30].
 
 The concept is introduced with as few syntax extensions as possible and reasonable, and the already established concept of built-in procedures is preferred over a library implementation.
 
@@ -439,7 +439,7 @@ Calling SELECT selects the first of the channels ready to communicate and transm
 
 SEND, RECEIVE, CLOSE and SELECT modify the channel state, i.e. don't work with IN parameters or receivers.
 
-As an alternative to the SELECT call, this modified version of the WITH statement can be used:
+As an alternative to the SELECT call, this extended version of the WITH statement can be used:
 ```
 WITH 
   SEND(c_i, v_i) DO Si
@@ -497,6 +497,7 @@ Calling FORK executes the procedure p with actual arguments a1 to aN in a new th
 - [27] Donovan, A.A.; Kernighan, B.W. (2015): The Go Programming Language (1st. ed.). Addison-Wesley Professional
 - [28] Ben-Ari, M. (1982): Principles of Concurrent Programming. Prentice Hall Professional Technical Reference
 - [29] https://levelup.gitconnected.com/go-concurrency-pattern-semaphore-9587d45f058d
+- [30] https://news.ycombinator.com/item?id=38764412
 
   
 
