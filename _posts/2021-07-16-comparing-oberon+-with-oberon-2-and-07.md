@@ -49,7 +49,7 @@ In addition to the above, Oberon+ adds the following:
 - Delegate procedure types (procedure types for bound procedures)
 - Constant VAR parameters using the IN keyword
 - ANYREC, implicit base type of each record
-- Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %})
+- Generic modules, see [this post]({% post_url 2021-07-17-considering-generics %}), with support for literals and procedure references as generic arguments
 - FFI language for cross-platform C shared library integration, see [this post]({% post_url 2021-08-03-towards-a-foreign-function-interface %})
 - Variable length arrays (VLA)
 - Conditional compilation (as recommended by the Oakwood guidelines)
@@ -59,9 +59,9 @@ In addition to the above, Oberon+ adds the following:
 Features in evaluation:
 
 - Array and record literals
-- Literals and procedure references as generic arguments
 - COMPLEX type, as defined in the Oakwood guidelines, including standard libraries
 - Covariance of overloaded method return types and fields (like Component Pascal)
+- Concurrency, see [this post]({% post_url 2023-12-25-towards-concurrency %})
 
 
 
