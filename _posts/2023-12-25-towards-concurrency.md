@@ -425,9 +425,11 @@ The call to SEND or RECEIVE returns TRUE on success or FALSE if the channel was 
 
 ```
 PROCEDURE CLOSE(VAR c: CHANNEL OF T);
+
+PROCEDURE CLOSED(VAR c: CHANNEL OF T):BOOLEAN;
 ```
 
-The CLOSE procedure sets the channel status to closed. Once called, a channel cannot be reopened again. Calling CLOSE on an already closed channel has no effect.
+The CLOSE procedure sets the channel status to closed. Once called, a channel cannot be reopened again. Calling CLOSE on an already closed channel has no effect. The CLOSED procedure returns TRUE if c was closed, FALSE otherwise.
 
 ```
 PROCEDURE SELECT(n: INTEGER 
