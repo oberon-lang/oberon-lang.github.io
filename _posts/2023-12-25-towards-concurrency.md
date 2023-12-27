@@ -4,7 +4,7 @@ title:  Towards Oberon+ Concurrency
 author: Rochus Keller
 ---
 
-(Updated 2023-12-26)
+(Updated 2023-12-27)
 
 (subject to public review until further notice)
 
@@ -402,6 +402,7 @@ ChannelType = CHANNEL [ length ] OF type
 
 length     = ConstExpression
 ```
+Note that only upper-case versions of reserved words and names are shown here, but Oberon+ also supports lower-case versions.
 
 A channel declaration is similar to an array declaration. The new reserved word `CHANNEL` declares a channel of a specific base type. In contrast to Joyce and similarly to Go, a channel has exactly one type, and this type is not restricted (i.e. it can also be pointer type). If length is missing or 0, an unbuffered channel is declared; if length is a natural number, a buffered channel is declared.
 
@@ -410,38 +411,20 @@ A channel is a value type with the special rule that it cannot be copied (i.e. a
 In addition the following procedures are predeclared (pseudo-syntax):
 
 ```
-PROCEDURE SEND(VAR c: CHANNEL OF T; v: T ):
-              BOOLEAN;
+PROCEDURE SEND(VAR c: CHANNEL OF T; v: T );
 
-PROCEDURE RECEIVE(VAR c: CHANNEL OF T; VAR v: T ):
-                 BOOLEAN;
+PROCEDURE RECEIVE(VAR c: CHANNEL OF T; VAR v: T );
 ```
 
-The SEND procedure transmits the value of the actual parameter v to the channel c. If the channel c is unbuffered or the buffer is full, the call blocks until another thread calls RECEIVE or CLOSE on the channel.
+The SEND procedure transmits the value of the actual parameter v to the channel c. If the channel c is unbuffered or the buffer is full, the call blocks until another thread calls RECEIVE on the channel.
 
-The RECEIVE procedure reads a value from the channel c and stores it in the variable v. If the channel c is unbuffered or the buffer is empty, the call blocks until another thread calls SEND or CLOSE on the channel.
+The RECEIVE procedure reads a value from the channel c and stores it in the variable v. If the channel c is unbuffered or the buffer is empty, the call blocks until another thread calls SEND on the channel.
 
-The call to SEND or RECEIVE returns TRUE on success or FALSE if the channel was closed before or during the call.
+SEND and RECEIVE modify the channel state, i.e. don't work with IN parameters or receivers.
 
-```
-PROCEDURE CLOSE(VAR c: CHANNEL OF T);
+In Go - in contrast to its predecessors - channels can be closed; Oberon+ doesn't support this feature because it is not strictly necessary and has a complicated semantics which contradicts the Oberon philosophy of simplicity.
 
-PROCEDURE CLOSED(VAR c: CHANNEL OF T):BOOLEAN;
-```
-
-The CLOSE procedure sets the channel status to closed. Once called, a channel cannot be reopened again. Calling CLOSE on an already closed channel has no effect. The CLOSED procedure returns TRUE if c was closed, FALSE otherwise.
-
-```
-PROCEDURE SELECT(n: INTEGER 
-             { ; VAR c_i: CHANNEL OF T_i; VAR v_i: T_i } 
-             { ; VAR c_j: CHANNEL OF T_j; v_j: T_j } 
-             [ ; non_blocking: BOOLEAN ] ): INTEGER;
-```          
-Calling SELECT selects the first of the channels ready to communicate and transmits/receives the corresponding value/variable. If several channels are ready to communicate at once, one of them is randomly selected. If non_blocking is FALSE, the call blocks until at least one channel is ready to communicate, or CLOSE was called on at least one channel. If non_blocking is TRUE, the call immediately returns. The first parameter n is a constant expression representing the number of input channels, followed by n channel and variable pairs c_i/v_i, followed by m output channel and expression pairs c_j/v_j; the optional non_blocking parameter is assumed FALSE by default. The call to SELECT returns the index (1..n+m) of the selected channel or 0.
-
-SEND, RECEIVE, CLOSE and SELECT modify the channel state, i.e. don't work with IN parameters or receivers.
-
-As an alternative to the SELECT call, this extended version of the WITH statement can be used:
+An extended version of the WITH statement can be used to choose which of a set of possible SEND or RECEIVE operations will proceed:
 ```
 WITH 
   SEND(c_i, v_i) DO Si
@@ -449,12 +432,14 @@ WITH
   ELSE S
 END;
 ```
-For this purpose the definition of Guard is slightly extended:
+For this purpose the definition of Guard syntax is slightly extended:
 ```
 Guard = qualident ':' qualident 
         | 'SEND' ActualParameters 
         | 'RECEIVE' ActualParameters
 ```
+
+The extended WITH statement selects the first of the channels ready to communicate and executes the listed SEND or RECEIVE guard. If several channels are ready to communicate at once, one of them is randomly selected. If no ELSE clause is present, the statement blocks until at least one channel is ready to communicate. If ELSE is present, the statement doesn't block but executes the statements of the ELSE clause.
 
 ```
 PROCEDURE FORK(p: ProcedureType 
@@ -462,11 +447,6 @@ PROCEDURE FORK(p: ProcedureType
 ```
 Calling FORK executes the procedure p with actual arguments a1 to aN in a new thread. The procedure p cannot have variable parameters, and must not be a predeclared, nor a type-bound procedure, nor may it access local variables or parameters declared in outer (type-bound) procedures or call procedure which access local variables or parameters declared in outer (type-bound) procedures. The actual arguments must be compatible with the formal parameters of p. If a new thread cannot be started, the program halts. The specification does not prescribe what type of thread this should be (i.e. the program cannot assume that threads are e.g. light-weight).
 
-              
-#### Open issues
-
-- Do we need the SELECT function, or the extended WITH statement, or both?
-- Are e.g. simulated semaphores based on channels good enough, or do we need low-level concurrency primitives (i.e. as the ones found in the Go sync module)?
  
 #### References
 
