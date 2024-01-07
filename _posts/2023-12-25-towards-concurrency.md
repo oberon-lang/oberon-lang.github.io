@@ -4,7 +4,7 @@ title:  Towards Oberon+ Concurrency
 author: Rochus Keller
 ---
 
-(Updated 2023-12-27)
+(Updated 2024-01-07)
 
 (subject to public review until further notice)
 
@@ -233,6 +233,47 @@ forall-statement = “forall” index-variable-declaration “do”
 ```
 Both in Joyce and SuperPascal, ports or channels are reference types and thus support indirect naming. In both languages a channel can transport different message types, but in Joyce the message type is detected by a token and in SuperPascal by the order of arrival. SuperPascal has no longer a poll statement. The author writes in [20]: "I have not found it necessary to use a statement that enables a parallel process to poll several channels until a communication takes place on one of them. Nondeterministic communication is necessary at the hardware level in a routing network, but appears to be of minor importance in parallel programs for computational science."
 
+#### Ada versus Java
+
+It was already stated that the rendezvous concept of Ada83 has been particularly influenced by CSP. The concurrency features of Ada83 have been criticized in many respects, among other things because of the rendezvous performance overhead. Therefore Ada95 added Protected Types, each instance of which essentially corresponds to a monitor as described by Brinch Hansen and Hoare [2, 5]. 
+
+A protected type in Ada 95 encapsulates some data items, which can only be accessed through the protected type’s operations. It is declared as shown in the following example [33]:
+```
+protected type Shared_Int is
+  procedure Set (Val : in Integer);
+  function Get return Integer;
+  entry Wait_Until_Zero;
+private
+  Current : Integer := 0;
+end Shared_Int;
+
+protected body Shared_Int is
+  procedure Set (Val : in Integer) is
+  begin
+    Current := Value;
+  end Set;
+  function Get return Integer is
+  begin
+    return Current;
+  end Get;
+  entry Wait_Until_Zero when Current = 0 is
+  begin
+    null;
+  end Wait_Until_Zero;
+end Shared_Int;
+```
+Although protected types are fully integrated into the type system of Ada 95 which supports object-oriented programming, protected types don't support inheritance nor polymorphism. [33] includes a consolidated proposal on how to extend Ada to support object-oriented protected types. Interestingly, this proposal has not yet been implemented with the Ada 2023 release. Though, Ada 2005 introduced Java-like interfaces, which are also applicable to protected types and thus make them object-oriented to a certain degree, but not to the extent proposed in [33].
+
+An important issue when combining object-oriented with concurrency concepts is the so called "inheritance anomaly", which is described in [33] as "the synchronization between operations of a class is not local but may depend on the whole set of operations present for the class. When a subclass adds new operations, it may therefore become necessary to change the synchronization defined in the parent class to account for these new operations." A major cause is the partition of the object state, as it happens with sub and super classes having their own data items. This issue pretty much undermines the benefit of object-orientation and is likely the reason why Ada after nearly thirty years still doesn't support portected type extensions.
+
+In Java, each class becomes a monitor, if a method or block is attributed with the "synchronized" keyword [34]. The attributed method or block automatically becomes a critical section. Each object (including the "class object" associated with a class's static members) has a lock. If a
+thread invokes a method marked as synchronized, then it will be blocked unless either the method’s containing object is unlocked or the thread already holds the lock on this object. A Java class may contain both synchronized and unsynchronized methods. Thus invoking a synchronized method does not guarantee that the access will be safe. Ada, in contrast, protects all externally invokable operations on a protected type.
+
+Deciding whether to specify a method as synchronized in Java is not always easy. Unnecessarily making a method synchronized degrades performance and may lead to deadlock in the presence of mutually dependent methods. Failing to specify synchronized when it is needed can cause unpredictable effects. If a synchronized method is inherited, it is also synchronized in the subclass. One of the effects of Java’s thread model being based on OOP is thus a simple
+approach to inheriting mutual exclusion protection. However, Java still suffers from the problem, that mutually dependent methods may lead to deadlocks. It is almost inevitable that a Java subclass that requires additional synchronization logic will need to completely re-implement superclass methods containing wait/notification calls, thus breaking encapsulation.
+
+According to Brinch Hansen [35], "the most important security measure [for a parallel programming language]is to check that processes access disjoint sets of variables only and do not interfere with each other in time-dependent ways." He concludes that Java does not support a monitor concept, unless all methods are declared as synchronized and all variables are declared as private, and that parallel threads in Java can access shared variables otherwise, either directly or indirectly, without any synchronization. He didn't see how a compiler could detect such errors and concludes: "It is astounding to me that Java’s insecure parallelism is taken seriously by the programming community, a quarter of a century after the invention of monitors and Concurrent Pascal. It has no merit."
+
 #### The lineage of Go
 
 The Go programming language [27] started in 2007, reached version 1.0 in 2012, and entered the [Stack Overflow survey of most popular technologies](https://insights.stackoverflow.com/survey/) in 2017 for the first time with a popularity grade of 4.2% (vs. Java with 39.3% and C++ with 22.1%); it has grown to 13.24% (vs. Java 30.55% and C++ with 22.42%) in 2023. Go is particularly interesting here because it implements the CSP channel concept in a very popular programming language.
@@ -242,6 +283,8 @@ The evolution of Go started in 1985 with a small language called Squeak [16] whi
 Newsqueak was followed by Alef in 1995 and by Limbo in 1996. Alef, which was used in the Plan 9 operating system from Bell Labs, can be seen as a compiled version of Newsqueak. It is worth noting that the Oberon system has influenced the parts of Plan 9, which were implemented by the author of Newsqueak [26]. Limbo is very similar to Newsqueak as well; it was used to implement parts of the Inferno operating system from Bell Labs, which is a descendant of Plan 9 and still in use today.
 
 Go mostly adopted the concurrency concept from Newsqueak with some additional features from other languages, such as buffered channels.
+
+But even though Go is designed entierly on the "channels as first-class values" principle, with dedicated syntax for channel communication, it still includes the whole array of synchronization primitives in a dedicated package of the standard library. Even if it is possible to to emulate low-level concurrency primitives using higher-level concepts like channels [28], it's in many cases just not practical. An article that has met with a broad response [31], expresses it as follows: "Unfortunately, as it stands, there are simply a surprising amount of problems that are solved better with traditional synchronization primitives than with Go’s version of CSP. [..] The summary here is that you will be using traditional synchronization primitives in addition to channels if you want to do anything real." [32] found, that "it is as easy to make concurrency bugs with message passing as with shared memory, sometimes even more"; other important finding are that mutexes are used twice as often on average as channels, and that message passing is the main cause of blocking bugs.
 
 #### Concurrency in Oberon
 
@@ -309,7 +352,7 @@ END Eratosthenes.
 
 But what actually is an "active object"? An active object essentially corresponds to an actor as defined in the Actor Model [24]. This conception of the term was already established in the well-known book "Pattern languages of program design" in 1996 [23]. An "Active Object [..] decouples method execution from method invocation to enhance concurrency and simplify synchronized access to an object that resides in its own thread of control. [..] This decoupling is designed so the client thread appears to invoke an ordinary method. This method is automatically converted into a method request object and passed to another thread of control, where it is converted back into a method and executed on the object implementation" [23]. An example where this kind of decoupling is e.g. realized is Erlang [25], one of the most successful actor languages, where named processes communicate via an asynchronous message passing system (in contrast to synchronous message passing in CSP), and use the receive primitive to retrieve messages that match desired patterns.
 
-From this perspective, object types in Active Oberon are nothing but plain old monitors [5], as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also less flexible; and beyond that, the concept was already proposed by Brinch Hansen in 1972 [2]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language).
+From this perspective, object types in Active Oberon are nothing but plain old monitors [5], as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also less flexible; and beyond that, the concept was already proposed by Brinch Hansen in 1972 [2]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language). The authors did neither seem to have been concerned about the "inheritance anomaly" discussed above [33], nor the fact that Active Oberon essentially shares all the disadvantages with Java that Brinch Hansen criticized [35].
 
 All in all, it has to be concluded that Oberon either omits the important topic of concurrency altogether, or only considers it in an outdated form that ignored almost thirty years of research when published.
 
@@ -361,7 +404,7 @@ It is well known which low-level concurrency primitives exist and how these can 
 
 As already mentioned it is possible to implement low-level concurrency primitives in a library without dedicated syntax. Thus a common approach is to only offer low-level concurrency primitives (in the standard library, or as built-in types and procedures, or as dedicated syntax) and leave it to the user of the programming language to construct higher-level concurrency concepts from these low-level primitives. 
 
-But it is also possible to emulate low-level concurrency primitives based on the higher-level conceptsp provided by a programming language. For example, [28] demonstrates how to simulate a semaphore using a monitor, and concludes: "This is important theoretically since it shows that we have not lost any expressive power in the transition from semaphores to monitors". 
+But it is also possible to emulate low-level concurrency primitives based on the higher-level concepts provided by a programming language. For example, [28] demonstrates how to simulate a semaphore using a monitor, and concludes: "This is important theoretically since it shows that we have not lost any expressive power in the transition from semaphores to monitors". 
 
 How a semaphore can be implemented using Go channels is demonstrated in [29]; here is the relevant code:
 ```
@@ -383,30 +426,37 @@ func (s *semaphore) Release() {
     <-s.semC
 }
 ```
-It is therefore feasible to stick to a high-level concurrency concept in a programming language. If really necessary, one can always offer low-level primitives via a library, as e.g. done in Go [27].
+It seems therefore feasible to stick to a high-level concurrency concept in a programming language. But as e.g. demonstrated in [31], a single high-level concept is likely insufficient to decently represent all real-world problems. Of course, one can always offer low-level primitives via a library, as e.g. done in Go [27]. But this might lead to yet to other issues caused by the interaction of high- and low-level concepts, as e.g. demonstrated in [32].
 
 
 #### Elaboration of Oberon+ concurrency
 
-From the previous sections we can conclude, that message passing based on channels is an optimal fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established over the last forty years as an improvement over low-level concurrency primitives, and also over monitors. The ever popularity and success of the Go programming language is also a good indicator that channels are the way to go. Also feedback from public discussions about previous versions of this paper has been taken into consideration [30].
+From the previous sections we can conclude, that message passing based on channels is a good fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established as an improvement over low-level concurrency primitives. But we also saw that also monitors should be considered for good reasons, because even in Go, low-level synchronization primitives are still more frequentely used than channels, and there are problems where channels are too complicated, even considering their duality with monitors. Where Wirth in 1978 concluded, that there was "no clear favorite way to express and control concurrency, and hence no set of language constructs that clearly offered themselves for inclusion" [4], this situation has changed today, more than fourty years later. 
 
-The concept is introduced with as few syntax extensions as possible and reasonable, and the already established concept of built-in procedures is preferred over a library implementation.
+Also the findings in [33] and [35], and the feedback from public discussions about previous versions of this paper [30] have been taken into consideration.
+
+The concept is introduced with as few syntax extensions as possible and reasonable, and the already established concept of built-in procedures is preferred over a library implementation. 
 
 The Oberon+ syntax shall be extended as follows:
 
 ```
-type = NamedType | enumeration | ArrayType | RecordType
-       | PointerType | ProcedureType | ChannelType
+type = NamedType | enumeration | ArrayType 
+       | RecordType | PointerType | ProcedureType 
+       | ChannelType | MonitorType
 
 ChannelType = CHANNEL [ length ] OF type
 
-length     = ConstExpression
+MonitorType = MONITOR FieldList { [';'] FieldList} END
 ```
 Note that only upper-case versions of reserved words and names are shown here, but Oberon+ also supports lower-case versions.
 
 A channel declaration is similar to an array declaration. The new reserved word `CHANNEL` declares a channel of a specific base type. In contrast to Joyce and similarly to Go, a channel has exactly one type, and this type is not restricted (i.e. it can also be pointer type). If length is missing or 0, an unbuffered channel is declared; if length is a natural number, a buffered channel is declared.
 
-A channel is a value type with the special rule that it cannot be copied (i.e. assigned or passed as a value parameter). If a channel is a field of a record type, instances of this record type or its subtypes can no longer be copied. A channel can be passed by reference or be the base type of a pointer. Channel types are compatible if they have equal base types. If a channel is the base type of a pointer, the channel has to be allocated by the NEW() built-in procedure; if the length in the channel declaration is missing, NEW() can have an optional length parameter.
+A channel is a value type with the special rule that it cannot be copied (i.e. assigned or passed as a value parameter). If a channel is a field of a record type, instances of this record type or its subtypes can no longer be copied. Neither a channel nor a record with a channel field can be the type of a local variable. A channel can be passed by reference or be the base type of a pointer. Channel types are compatible if they have equal base types. If a channel is the base type of a pointer, it has to be allocated by the NEW() built-in procedure; if the length in the channel declaration is missing, NEW() can have an optional length parameter.
+
+A monitor declaration is similar to a record declaration. It uses the new reserved word `MONITOR` and has a field list like a record, but it doesn't have a base type (i.e. it cannot be extended) and fields cannot have export marks and can only be accessed from the procedures bound to the monitor type. Accordingly, procedures may be associated (i.e. bound) with a monitor type declared in the same scope, in which case their body becomes a critical section. A procedure bound to a monitor cannot call the RAISE built-in procedure. If a procedure bound to a monitor calls a procedure which directly or indirectly calls RAISE, this call must be protected by PCALL.
+
+A monitor, like a channel, is a value type with the special rule that it cannot be copied (i.e. assigned or passed as a value parameter). If a monitor is a field of a record type, instances of this record type or its subtypes can no longer be copied. Neither a monitor nor a record with a monitor field can be the type of a local variable. A monitor can be passed by reference or be the base type of a pointer. The same compatibility rules as for records without base types apply. If a monitor is the base type of a pointer, it has to be allocated by the NEW() built-in procedure.
 
 In addition the following procedures are predeclared (pseudo-syntax):
 
@@ -414,6 +464,10 @@ In addition the following procedures are predeclared (pseudo-syntax):
 PROCEDURE SEND(VAR c: CHANNEL OF T; v: T );
 
 PROCEDURE RECEIVE(VAR c: CHANNEL OF T; VAR v: T );
+
+PROCEDURE AWAIT();
+
+PROCEDURE SIGNAL();
 ```
 
 The SEND procedure transmits the value of the actual parameter v to the channel c. If the channel c is unbuffered or the buffer is full, the call blocks until another thread calls RECEIVE on the channel.
@@ -423,6 +477,10 @@ The RECEIVE procedure reads a value from the channel c and stores it in the vari
 SEND and RECEIVE modify the channel state, i.e. don't work with IN parameters or receivers.
 
 In Go - in contrast to its predecessors - channels can be closed; Oberon+ doesn't support this feature because it is not strictly necessary and has a complicated semantics which contradicts the Oberon philosophy of simplicity.
+
+The AWAIT and SIGNAL procedures can only be called from a procedure bound to a monitor.
+
+The AWAIT procedure suspends the calling thread until SIGNAL is called. More than one thread can be waiting on the same MONITOR instance. Calling SIGNAL wakes up the next waiting thread.
 
 An extended version of the WITH statement can be used to choose which of a set of possible SEND or RECEIVE operations will proceed:
 ```
@@ -480,8 +538,11 @@ Calling FORK executes the procedure p with actual arguments a1 to aN in a new th
 - [28] Ben-Ari, M. (1982): Principles of Concurrent Programming. Prentice Hall Professional Technical Reference
 - [29] https://levelup.gitconnected.com/go-concurrency-pattern-semaphore-9587d45f058d
 - [30] https://news.ycombinator.com/item?id=38764412
-
-  
+- [31] https://www.jtolio.com/2016/03/go-channels-are-bad-and-you-should-feel-bad/
+- [32] Tu, T.; Liu, X.; Song, L.; and Zhang, Y. (2019): Understanding Real-World Concurrency Bugs in Go. In Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems. ACM, New York
+- [33] Wellings, A.J.; Johnson, B.; Sanden B.; Kienzle, J.; Wolf, T.; and S. Michell (2000): Integrating object-oriented programming and protected objects in Ada 95. ACM Trans. Program. Lang. Syst. 22, 3, 506–539
+- [34] Brosgol, B.M. (1998): A comparison of the concurrency features of Ada 95 and Java. In Proceedings of the 1998 annual ACM SIGAda international conference on Ada (SIGAda '98). Association for Computing Machinery, New York, USA, 175–192
+- [35] Hansen, P.B. (1999): Java's insecure parallelism. SIGPLAN Not. 34, 4, 38–45
 
 
 
