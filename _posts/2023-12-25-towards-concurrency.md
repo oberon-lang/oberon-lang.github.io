@@ -507,8 +507,9 @@ module Eratosthenes
 import Out, Buffers
 const N = 1000; Terminate = -1
 
-type Sieve = pointer to monitor buf: Buffers.Buffer
-				prime, n: integer; next: Sieve end
+type Sieve = pointer to monitor 
+               buf: Buffers.Buffer
+               prime, n: integer; next: Sieve end
 
 procedure (this: Sieve) Init
 begin
@@ -519,6 +520,7 @@ end Init
 
 procedure (this: Sieve) Put(n: integer)
 begin
+  await( ~buf.IsFull() )
   this.buf.Put(n)
 end Put
 
@@ -533,8 +535,7 @@ begin
     Out.Int(n, 0); Out.String(" is prime"); 
     Out.Ln;
     prime := n;
-    new(next)
-    next.Init
+    new(next); next.Init
   elsif (n mod prime) # 0 THEN
     next.Put (n)
   end
@@ -550,8 +551,7 @@ end Run
 
 var s: Sieve; i: integer
 begin
-  new(s)
-  s.Init
+  new(s); s.Init
   for i := 2 to N-1 do s.Put(i) end
   s.Put(Terminate)
 end Eratosthenes
