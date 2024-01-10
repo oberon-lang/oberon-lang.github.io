@@ -513,31 +513,31 @@ type Sieve = pointer to monitor
 
 procedure (this: Sieve) Init
 begin
-  buf.Init
-  prime := 0; next := NIL
+  this.buf.Init
+  this.prime := 0; this.next := nil
   fork(Run, this)
 end Init
 
 procedure (this: Sieve) Put(n: integer)
 begin
   await( ~this.buf.IsFull() )
-  this.buf.Put(n)
+  this.buf.Put(this.n)
 end Put
 
 procedure (this: Sieve) Calc():boolean
 begin 
   await( ~this.buf.IsEmpty() )
-  buf.Get(this.n)
-  if n = Terminate then
-    if next # nil then next.Put(n) end
+  this.buf.Get(this.n)
+  if this.n = Terminate then
+    if this.next # nil then this.next.Put(n) end
     return true
-  elsif prime = 0 then
-    Out.Int(n, 0); Out.String(" is prime"); 
+  elsif this.prime = 0 then
+    Out.Int(this.n, 0); Out.String(" is prime"); 
     Out.Ln;
-    prime := n;
-    new(next); next.Init
-  elsif (n mod prime) # 0 THEN
-    next.Put (n)
+    this.prime := this.n;
+    new(next); this.next.Init
+  elsif (this.n mod this.prime) # 0 THEN
+    this.next.Put(this.n)
   end
   return false
 end Calc
