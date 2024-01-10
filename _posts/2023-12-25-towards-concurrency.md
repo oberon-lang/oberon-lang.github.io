@@ -520,13 +520,13 @@ end Init
 
 procedure (this: Sieve) Put(n: integer)
 begin
-  await( ~buf.IsFull() )
+  await( ~this.buf.IsFull() )
   this.buf.Put(n)
 end Put
 
 procedure (this: Sieve) Calc():boolean
 begin 
-  await( ~buf.IsEmpty() )
+  await( ~this.buf.IsEmpty() )
   buf.Get(this.n)
   if n = Terminate then
     if next # nil then next.Put(n) end
