@@ -435,9 +435,9 @@ It seems therefore feasible to stick to a high-level concurrency concept in a pr
 
 #### Elaboration of Oberon+ concurrency
 
-From the previous sections we can conclude, that message passing based on channels is a good fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established as an improvement over low-level concurrency primitives. But we also saw that also monitors should be considered for good reasons, because even in Go, low-level synchronization primitives are still more frequentely used than channels, and there are problems where channels are too complicated, even considering their duality with monitors. Where Wirth in 1978 concluded, that there was "no clear favorite way to express and control concurrency, and hence no set of language constructs that clearly offered themselves for inclusion" [4], this situation has changed today, more than forty years later. 
+From the previous sections we can conclude, that message passing based on channels is a good fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept has been well studied and established as an improvement over low-level concurrency primitives. But we also saw that monitors should also be considered for good reasons, because even in Go, low-level synchronization primitives are still used more frequentely than channels, and there are problems where channels are too complicated, even considering their duality with monitors. While Wirth in 1978 concluded, that there was "no clear favorite way to express and control concurrency, and hence no set of language constructs that clearly offered themselves for inclusion" [4], this situation has changed today, more than forty years later. 
 
-Also the findings in [33] and [35], and the feedback from public discussions about previous versions of this paper [30] have been taken into consideration.
+The findings in [33] and [35], as well as the feedback from public discussions of earlier versions of this paper [30], have been taken into consideration.
 
 The concept is introduced with as few syntax extensions as possible and reasonable, and the already established concept of built-in procedures is preferred over a library implementation. 
 
