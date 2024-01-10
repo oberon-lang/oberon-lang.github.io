@@ -509,12 +509,11 @@ const N = 1000; Terminate = -1
 
 type Sieve = pointer to monitor 
                buf: Buffers.Buffer
-               prime, n: integer; next: Sieve end
+               prime: integer; next: Sieve end
 
 procedure (this: Sieve) Init
 begin
   this.buf.Init
-  this.prime := 0; this.next := nil
   fork(Run, this)
 end Init
 
@@ -525,19 +524,20 @@ begin
 end Put
 
 procedure (this: Sieve) Calc():boolean
+var n: integer
 begin 
   await( ~this.buf.IsEmpty() )
-  this.buf.Get(this.n)
-  if this.n = Terminate then
+  this.buf.Get(n)
+  if n = Terminate then
     if this.next # nil then this.next.Put(n) end
     return true
   elsif this.prime = 0 then
-    Out.Int(this.n, 0); Out.String(" is prime"); 
-    Out.Ln;
-    this.prime := this.n;
+    Out.Int(this.n, 0); Out.String(" is prime")
+    Out.Ln
+    this.prime := n
     new(next); this.next.Init
-  elsif (this.n mod this.prime) # 0 THEN
-    this.next.Put(this.n)
+  elsif (n mod this.prime) # 0 THEN
+    this.next.Put(n)
   end
   return false
 end Calc
@@ -554,6 +554,42 @@ begin
   new(s); s.Init
   for i := 2 to N-1 do s.Put(i) end
   s.Put(Terminate)
+end Eratosthenes
+```
+And here is the same example using channels instead of monitors:
+```
+module Eratosthenes
+import Out
+const N = 1000; Terminate = -1
+
+type C = pointer to channel of integer
+
+procedure Calc(c: C)
+var n, prime: integer; cc: C
+begin 
+  loop
+    receive(c, n)
+    if n = Terminate then
+	  if cc # nil then send(cc,n) end
+	  exit
+    elsif prime = 0 then
+      Out.Begin
+	  Out.Int(n, 0); Out.String(" is prime") 
+	  Out.Ln; Out.End
+	  prime := n
+	  new(cc)
+    elsif (n mod prime) # 0 THEN
+	  send(cc,n)
+    end
+  end
+end Calc
+
+var c: C; i: integer
+begin
+  new(c)
+  fork(Calc,c)
+  for i := 2 to N-1 do send(c,i) end
+  send(c,Terminate)
 end Eratosthenes
 ```
  
