@@ -8,15 +8,19 @@ author: Rochus Keller
 
 (subject to public review until further notice)
 
-#### What is concurrency
-
-According to [1] 3.755 concurrency is a "property of a system in which events can occur independently of each other, and hence are not ordered". This very general definition is based on independent, unordered events and actions ([1] 3.1484). How actions (i.e. activities) can be made concurrent, we learn from [1] 3.756: "either by interleaving the activities or by simultaneous execution". So we can achieve concurrency by either interleaving activities on a single processor, or by simultaneously executing activities on multiple processors.
-
-Both methods of concurrency have been successfully implemented over the years in various programming languages. 
+#### Introduction
 
 Today, where virtually every system includes more than one processor, support for parallel execution has become essential. A programming language can support concurrency either through libraries and external function calls, or directly through built-in language constructs. Both approaches are ubiquitous.
 
-This paper examines how state-of-the-art parallel execution should be supported in Oberon+, while keeping the language as simple as possible.
+This paper examines the state-of-the-art of concurrency and how it should be supported in Oberon+, while keeping the language as simple as possible.
+
+What do we mean by concurrency? 
+
+According to [1] 3.755 concurrency is a "property of a system in which events can occur independently of each other, and hence are not ordered". This very general definition is based on independent, unordered events and actions ([1] 3.1484). How actions (i.e. activities) can be made concurrent, we learn from [1] 3.756: "either by interleaving the activities or by simultaneous execution". So we can achieve concurrency by either interleaving activities on a single processor, or by simultaneously executing activities on multiple processors.
+
+Both methods of concurrency have been successfully implemented over the years in various programming languages.
+
+We first analyze how concurrency was implemented in other languages, then set the stage for the design, and finally present a proposal how Oberon+ should implement concurrency.
 
 #### Concurrency in Modula
 
