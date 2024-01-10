@@ -4,7 +4,7 @@ title:  Towards Oberon+ Concurrency
 author: Rochus Keller
 ---
 
-(Updated 2024-01-07)
+(Updated 2024-01-10)
 
 (subject to public review until further notice)
 
@@ -352,7 +352,7 @@ END Eratosthenes.
 
 But what actually is an "active object"? An active object essentially corresponds to an actor as defined in the Actor Model [24]. This conception of the term was already established in the well-known book "Pattern languages of program design" in 1996 [23]. An "Active Object [..] decouples method execution from method invocation to enhance concurrency and simplify synchronized access to an object that resides in its own thread of control. [..] This decoupling is designed so the client thread appears to invoke an ordinary method. This method is automatically converted into a method request object and passed to another thread of control, where it is converted back into a method and executed on the object implementation" [23]. An example where this kind of decoupling is e.g. realized is Erlang [25], one of the most successful actor languages, where named processes communicate via an asynchronous message passing system (in contrast to synchronous message passing in CSP), and use the receive primitive to retrieve messages that match desired patterns.
 
-From this perspective, object types in Active Oberon are nothing but plain old monitors [5], as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also less flexible; and beyond that, the concept was already proposed by Brinch Hansen in 1972 [2]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language). The authors did neither seem to have been concerned about the "inheritance anomaly" discussed above [33], nor the fact that Active Oberon essentially shares all the disadvantages with Java that Brinch Hansen criticized [35].
+From this perspective, object types in Active Oberon are nothing but plain old monitors [5], as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also more costly; and the concept was already proposed by Brinch Hansen in 1972 [2]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language). The authors did neither seem to have been concerned about the "inheritance anomaly" discussed above [33], nor the fact that Active Oberon essentially shares all the disadvantages with Java that Brinch Hansen criticized [35].
 
 All in all, it has to be concluded that Oberon either omits the important topic of concurrency altogether, or only considers it in an outdated form that ignored almost thirty years of research when published.
 
@@ -431,7 +431,7 @@ It seems therefore feasible to stick to a high-level concurrency concept in a pr
 
 #### Elaboration of Oberon+ concurrency
 
-From the previous sections we can conclude, that message passing based on channels is a good fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established as an improvement over low-level concurrency primitives. But we also saw that also monitors should be considered for good reasons, because even in Go, low-level synchronization primitives are still more frequentely used than channels, and there are problems where channels are too complicated, even considering their duality with monitors. Where Wirth in 1978 concluded, that there was "no clear favorite way to express and control concurrency, and hence no set of language constructs that clearly offered themselves for inclusion" [4], this situation has changed today, more than fourty years later. 
+From the previous sections we can conclude, that message passing based on channels is a good fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept was well studied and established as an improvement over low-level concurrency primitives. But we also saw that also monitors should be considered for good reasons, because even in Go, low-level synchronization primitives are still more frequentely used than channels, and there are problems where channels are too complicated, even considering their duality with monitors. Where Wirth in 1978 concluded, that there was "no clear favorite way to express and control concurrency, and hence no set of language constructs that clearly offered themselves for inclusion" [4], this situation has changed today, more than forty years later. 
 
 Also the findings in [33] and [35], and the feedback from public discussions about previous versions of this paper [30] have been taken into consideration.
 
@@ -465,9 +465,7 @@ PROCEDURE SEND(VAR c: CHANNEL OF T; v: T );
 
 PROCEDURE RECEIVE(VAR c: CHANNEL OF T; VAR v: T );
 
-PROCEDURE AWAIT();
-
-PROCEDURE SIGNAL();
+PROCEDURE AWAIT(condition: BOOLEAN);
 ```
 
 The SEND procedure transmits the value of the actual parameter v to the channel c. If the channel c is unbuffered or the buffer is full, the call blocks until another thread calls RECEIVE on the channel.
@@ -478,9 +476,7 @@ SEND and RECEIVE modify the channel state, i.e. don't work with IN parameters or
 
 In Go - in contrast to its predecessors - channels can be closed; Oberon+ doesn't support this feature because it is not strictly necessary and has a complicated semantics which contradicts the Oberon philosophy of simplicity.
 
-The AWAIT and SIGNAL procedures can only be called from a procedure bound to a monitor.
-
-The AWAIT procedure suspends the calling thread until SIGNAL is called. More than one thread can be waiting on the same MONITOR instance. Calling SIGNAL wakes up the next waiting thread.
+The AWAIT procedure can only be called from a procedure bound to a monitor. It suspends the calling thread until the condition (boolean expression) becomes TRUE. More than one thread can be waiting on the same MONITOR instance. The condition of each AWAIT call is evaluated whenever a procedure bound to the corresponding monitor finishes. If the condition becomes TRUE, this wakes up the next waiting thread.
 
 An extended version of the WITH statement can be used to choose which of a set of possible SEND or RECEIVE operations will proceed:
 ```
@@ -505,6 +501,61 @@ PROCEDURE FORK(p: ProcedureType
 ```
 Calling FORK executes the procedure p with actual arguments a1 to aN in a new thread. The procedure p cannot have variable parameters, and must not be a predeclared, nor a type-bound procedure, nor may it access local variables or parameters declared in outer (type-bound) procedures or call procedure which access local variables or parameters declared in outer (type-bound) procedures. The actual arguments must be compatible with the formal parameters of p. If a new thread cannot be started, the program halts. The specification does not prescribe what type of thread this should be (i.e. the program cannot assume that threads are e.g. light-weight).
 
+Here is an example of a monitor (adopted from [21] page 157):
+```
+module Eratosthenes
+import Out, Buffers
+const N = 1000; Terminate = -1
+
+type Sieve = pointer to monitor buf: Buffers.Buffer
+				prime, n: integer; next: Sieve end
+
+procedure (this: Sieve) Init
+begin
+  buf.Init
+  prime := 0; next := NIL
+  fork(Run, this)
+end Init
+
+procedure (this: Sieve) Put(n: integer)
+begin
+  this.buf.Put(n)
+end Put
+
+procedure (this: Sieve) Calc():boolean
+begin 
+  await( ~buf.IsEmpty() )
+  buf.Get(this.n)
+  if n = Terminate then
+    if next # nil then next.Put(n) end
+    return true
+  elsif prime = 0 then
+    Out.Int(n, 0); Out.String(" is prime"); 
+    Out.Ln;
+    prime := n;
+    new(next)
+    next.Init
+  elsif (n mod prime) # 0 THEN
+    next.Put (n)
+  end
+  return false
+end Calc
+
+procedure Run(s: Sieve)
+begin
+  loop
+    if s.Calc() then exit end
+  end
+end Run
+
+var s: Sieve; i: integer
+begin
+  new(s)
+  s.Init
+  for i := 2 to N-1 do s.Put(i) end
+  s.Put(Terminate)
+end Eratosthenes
+```
  
 #### References
 
