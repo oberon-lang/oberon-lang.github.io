@@ -570,16 +570,16 @@ begin
   loop
     receive(c, n)
     if n = Terminate then
-	  if cc # nil then send(cc,n) end
-	  exit
+      if cc # nil then send(cc,n) end
+      exit
     elsif prime = 0 then
       Out.Begin
-	  Out.Int(n, 0); Out.String(" is prime") 
-	  Out.Ln; Out.End
-	  prime := n
-	  new(cc)
+      Out.Int(n, 0); Out.String(" is prime") 
+      Out.Ln; Out.End
+      prime := n
+      new(cc)
     elsif (n mod prime) # 0 THEN
-	  send(cc,n)
+      send(cc,n)
     end
   end
 end Calc
