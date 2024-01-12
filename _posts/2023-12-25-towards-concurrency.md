@@ -505,6 +505,8 @@ PROCEDURE FORK(p: ProcedureType
 ```
 Calling FORK executes the procedure p with actual arguments a1 to aN in a new thread. The procedure p cannot have variable parameters, and must not be a predeclared, nor a type-bound procedure, nor may it access local variables or parameters declared in outer (type-bound) procedures or call procedure which access local variables or parameters declared in outer (type-bound) procedures. The actual arguments must be compatible with the formal parameters of p. If a new thread cannot be started, the program halts. The specification does not prescribe what type of thread this should be (i.e. the program cannot assume that threads are e.g. light-weight).
 
+#### Oberon+ examples
+
 Here is an example of a monitor (adopted from [21] page 157):
 ```
 module Eratosthenes
@@ -595,6 +597,44 @@ begin
   for i := 2 to N-1 do send(c,i) end
   send(c,Terminate)
 end Eratosthenes
+```
+
+Here is an implementation of a mutex with signals based on channels (TODO: review):
+```
+module Mutex(const numOfSignals : integer)
+
+type M = record c: channel 1 of boolean
+                s: array numOfSignals of channel of boolean
+         end
+
+procedure lock(var m: M)
+begin
+  send(m.c,true)
+end lock
+
+procedure unlock(var m: M)
+var tmp: boolean
+begin
+  receive(m.c,tmp)
+end unlock
+
+procedure wait(var m: M; s: integer)
+var tmp: boolean
+begin
+  unlock(m)
+  loop
+    receive(m.s[s],tmp)
+	with lock(m) do exit else end
+  end
+end wait
+
+procedures signal(var m: M; s: integer)
+begin
+  with send(m.s[s],true) do else end
+end signal
+
+end Mutex
+
 ```
  
 #### References
