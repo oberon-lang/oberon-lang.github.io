@@ -604,7 +604,8 @@ Here is an implementation of a mutex with signals based on channels (TODO: revie
 module Mutex(const numOfSignals : integer)
 
 type M = record c: channel 1 of boolean
-                s: array numOfSignals of channel of boolean
+                s: array numOfSignals of 
+                channel of boolean
          end
 
 procedure lock(var m: M)
@@ -624,7 +625,7 @@ begin
   unlock(m)
   loop
     receive(m.s[s],tmp)
-	with lock(m) do exit else end
+    with lock(m) do exit else end
   end
 end wait
 
