@@ -4,7 +4,7 @@ title:  Towards Oberon+ Concurrency
 author: Rochus Keller
 ---
 
-(Updated 2024-01-10)
+(Updated 2024-01-29)
 
 (subject to public review until further notice)
 
@@ -216,9 +216,9 @@ Guard = InputOutputCommand [ "&" Expression ]
 
 Joyce is an interesting language and even allows indirect naming of ports (and thus passing ports as arguments to agents). A message type in Joyce can be any known type, but explicitly not including port types (although for no obvious reasons; so Joyce doesn't implement the "channels as first-class values" concept yet, later known from Newsqueak [18] and its successors). 
 
-The language is also interesting because it represents the transition of its author from the monitor concept of the seventies to the ideas of CSP. Neither Modula nor Oberon ever made this transition. According to his biography, Per Brink Hansen was supposed to design a special-purpose operating system with parallel processes for a real-time application, but soon reached a point where he found himself unable to write a clear description of what he intended, which was the occasion where he started to design a new parallel programming language, and left his former ones behind. Besides a similar Pascal subset, Joyce and Concurrent Pascal have little in common.
+The language is also interesting because it represents the transition of its author from the monitor concept of the seventies to the ideas of CSP. Neither Modula nor Oberon ever made this transition. According to his biography, Per Brinch Hansen was supposed to design a special-purpose operating system with parallel processes for a real-time application, but soon reached a point where he found himself unable to write a clear description of what he intended, which was the occasion where he started to design a new parallel programming language, and left his former ones behind. Besides a similar Pascal subset, Joyce and Concurrent Pascal have little in common.
 
-And as if Brink Hansen wanted to make the paradigm shift even clearer, he went on to design yet another CSP-based programming language called SuperPascal [19]. In contrast to Concurrent Pascal and Joyce, which were used to implement real systems, SuperPascal is conceived a "publication language" for the specification of parallel scientific algorithms. Nevertheless, it contains interesting concepts that are worth studying for their reusability in Oberon+.
+And as if Brinch Hansen wanted to make the paradigm shift even clearer, he went on to design yet another CSP-based programming language called SuperPascal [19]. In contrast to Concurrent Pascal and Joyce, which were used to implement real systems, SuperPascal is conceived a "publication language" for the specification of parallel scientific algorithms. Nevertheless, it contains interesting concepts that are worth studying for their reusability in Oberon+.
 
 In contrast to Joyce, where agent procedures were declared and dynamically started, SuperPascal has a "parallel" and "forall" statement to either denote a fixed number of statements for parallel execution, or a parallel execution of the same statement by a dynamic number of processes. As in Joyce, also SuperPascal supports recursive parallel execution. Whereas in Joyce ports were declared with implicit channels, channel types are explicit in SuperPascal. Another interesting difference is the use of built-in open(), send() and receive() procedures instead of the "+", "!" and "?" operators in Joyce.
 
@@ -356,7 +356,7 @@ END Eratosthenes.
 
 But what actually is an "active object"? An active object essentially corresponds to an actor as defined in the Actor Model [24]. This conception of the term was already established in the well-known book "Pattern languages of program design" in 1996 [23]. An "Active Object [..] decouples method execution from method invocation to enhance concurrency and simplify synchronized access to an object that resides in its own thread of control. [..] This decoupling is designed so the client thread appears to invoke an ordinary method. This method is automatically converted into a method request object and passed to another thread of control, where it is converted back into a method and executed on the object implementation" [23]. An example where this kind of decoupling is e.g. realized is Erlang [25], one of the most successful actor languages, where named processes communicate via an asynchronous message passing system (in contrast to synchronous message passing in CSP), and use the receive primitive to retrieve messages that match desired patterns.
 
-From this perspective, object types in Active Oberon are nothing but plain old monitors [5], as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also more costly; and the concept was already proposed by Brinch Hansen in 1972 [2]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language). The authors did neither seem to have been concerned about the "inheritance anomaly" discussed above [33], nor the fact that Active Oberon essentially shares all the disadvantages with Java that Brinch Hansen criticized [35].
+From this perspective, object types in Active Oberon are nothing but plain old monitors [5] (i.e. not "active objects"), as already implemented in Concurrent Pascal [7] or MODULA [3] in the seventies (see above). The fact that a thread is associated with the instance of the object type merely means that no extra data type needs to be introduced for a thread; but the thread has no special role or exclusivity in relation to the object instance otherwise. The AWAIT concept is a bit more comfortable than the extra signal datatype and send() procedure as e.g. in MODULA, but also more costly; and the concept was already proposed by Brinch Hansen in 1972 [2]. What is even more surprising is the fact that the monitor concept appears to have been adopted completely uncritically. Neither in [22] nor in any other publication of the group there is any indication that the state of the art has been evaluated, or why a concept from the early seventies should be more suitable than all the more recent ones. [22] refrains entirely from referencing the relevant original publications; [21] at least references Hoare's monitor paper [5], and even the original CSP paper [11] (but strangely only on the subject of "language interoperability", without acknowledging its importance for to the design of a concurrent programming language). The authors did neither seem to have been concerned about the "inheritance anomaly" discussed above [33], nor the fact that Active Oberon essentially shares all the disadvantages with Java that Brinch Hansen criticized [35].
 
 All in all, it has to be concluded that Oberon either omits the important topic of concurrency altogether, or only considers it in an outdated form that ignored almost thirty years of research when published.
 
@@ -437,7 +437,7 @@ It seems therefore feasible to stick to a high-level concurrency concept in a pr
 
 From the previous sections we can conclude, that message passing based on channels is a good fit for Oberon (in terms of simplicity and congruence with polymorphic message handling), and that this concept has been well studied and established as an improvement over low-level concurrency primitives. But we also saw that monitors should also be considered for good reasons, because even in Go, low-level synchronization primitives are still used more frequentely than channels, and there are problems where channels are too complicated, even considering their duality with monitors. While Wirth in 1978 concluded, that there was "no clear favorite way to express and control concurrency, and hence no set of language constructs that clearly offered themselves for inclusion" [4], this situation has changed today, more than forty years later. 
 
-The findings in [33] and [35], as well as the feedback from public discussions of earlier versions of this paper [30], have been taken into consideration.
+The findings in [33] and [35], as well as the feedback from public discussions of earlier versions of this paper ([30], [36]), have been taken into consideration.
 
 The concept is introduced with as few syntax extensions as possible and reasonable, and the already established concept of built-in procedures is preferred over a library implementation. 
 
@@ -641,25 +641,25 @@ end Mutex
 #### References
 
 - [1] ISO/IEC/IEEE 24765:2017 Systems and software engineering — Vocabulary
-- [2] Hansen, P.B. (2002): The Origin of Concurrent Programming. Springer Science+Business Media, New York
+- [2] Brinch Hansen, P. (2002): The Origin of Concurrent Programming. Springer Science+Business Media, New York
 - [3] Wirth, N. (1976): MODULA - a language for modular multiprogramming. Berichte des Instituts für Informatik 18, ETH Zürich
 - [4] Wirth, N. (2007): Modula-2 and Oberon. In Proceedings of the third ACM SIGPLAN conference on History of programming languages (HOPL III), New York
 - [5] Hoare, C.A.R. (1974): Monitors: An Operating System Structuring Concept. Comm. ACM 17, 10, pp. 549 – 557
 - [6] Wirth, N. (1988): Programming in Modula-2, 4th Edition. Springer, Berlin
-- [7] Hansen, P.B. (1975): Concurrent Pascal Report. California Institute of Technology
-- [8] Hansen, P.B. (1975): The programming language Concurrent Pascal. IEEE Transactions on Software Engineering
+- [7] Brinch Hansen, P. (1975): Concurrent Pascal Report. California Institute of Technology
+- [8] Brinch Hansen, P. (1975): The programming language Concurrent Pascal. IEEE Transactions on Software Engineering
 - [9] Wirth, Niklaus (1988): From modula to Oberon. Softw. Pract. Exper. 18, 7, 661–670
 - [10] Cadach, A. et al. (1993): The Oakwood Guidelines for Oberon-2 Compiler Developers. http://www.math.bas.bg/bantchev/place/oberon/oakwood-guidelines.pdf
 - [11] Hoare, C.A.R. (1978): Communicating sequential processes. Commun. ACM 21, 8, 666–677
 - [12] Burns, Alan; Lister, Andrew M.; Wellings Andrew J (1987): A review of Ada tasking. Springer-Verlag, Berlin
 - [13] Brookes, S. D.; Hoare, C. A. R.; Roscoe, A. W. (1984): A Theory of Communicating Sequential Processes. J. ACM 31, 3
-- [14] Hansen, P.B. (1987): Joyce—A programming language for distributed systems. Softw: Pract. Exper., 17: 29-50
+- [14] Brinch Hansen, P. (1987): Joyce—A programming language for distributed systems. Softw: Pract. Exper., 17: 29-50
 - [15] Inmos Corp. (1984): Occam Programming Manual. Prentice Hall Trade
 - [16] Cardelli, L.; Pike, R. (1985): Squeak: a language for communicating with mice. SIGGRAPH Comput. Graph. 19, 3 (Jul. 1985), 199–204
 - [17] Lalis, S.; Sanders, B.A. (1994): Adding concurrency to the Oberon system. In Proceedings of the international conference on Programming languages and system architectures. Springer-Verlag, Berlin
 - [18] Pike, R. (1989): A Concurrent Window System. Comput. Syst. 2(2): 133-153
-- [19] Hansen, P.B. (1994): The programming language SuperPascal. Softw. Pract. Exper. 24, 5
-- [20] Hansen, P.B. (1994): SuperPascal—a publication language for parallel scientific computing. Concurrency: Pract. Exper., 6: 461-483
+- [19] Brinch Hansen, P. (1994): The programming language SuperPascal. Softw. Pract. Exper. 24, 5
+- [20] Brinch Hansen, P. (1994): SuperPascal—a publication language for parallel scientific computing. Concurrency: Pract. Exper., 6: 461-483
 - [21] Reali, P.R.C. (2003): Using Oberon’s active objects for language interoperability and compilation [Doctoral Thesis, ETH]. https://doi.org/10.3929/ethz-a-004554781 
 - [22] Gutknecht, J. (1997): Do the Fish Really Need Remote Control? A Proposal for Self-Active Objects in Oberon. In Proceedings of the Joint Modular Languages Conference on Modular Programming Languages . Springer-Verlag, Berlin  
 - [23] Lavender, R.G.; Schmidt, D.C. (1996): Active object: an object behavioral pattern for concurrent programming. Pattern languages of program design 2. Addison-Wesley Longman Publishing Co., Inc., USA, 483–499
@@ -674,7 +674,8 @@ end Mutex
 - [32] Tu, T.; Liu, X.; Song, L.; and Zhang, Y. (2019): Understanding Real-World Concurrency Bugs in Go. In Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems. ACM, New York
 - [33] Wellings, A.J.; Johnson, B.; Sanden B.; Kienzle, J.; Wolf, T.; and S. Michell (2000): Integrating object-oriented programming and protected objects in Ada 95. ACM Trans. Program. Lang. Syst. 22, 3, 506–539
 - [34] Brosgol, B.M. (1998): A comparison of the concurrency features of Ada 95 and Java. In Proceedings of the 1998 annual ACM SIGAda international conference on Ada (SIGAda '98). Association for Computing Machinery, New York, USA, 175–192
-- [35] Hansen, P.B. (1999): Java's insecure parallelism. SIGPLAN Not. 34, 4, 38–45
+- [35] Brinch Hansen, P. (1999): Java's insecure parallelism. SIGPLAN Not. 34, 4, 38–45
+- [36] https://news.ycombinator.com/item?id=39175623
 
 
 
